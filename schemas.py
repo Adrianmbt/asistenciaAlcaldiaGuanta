@@ -27,6 +27,7 @@ class PersonalBase(BaseModel):
     entidad: EntidadPersonal
     nombre_instituto: Optional[str] = None
     cargo: Optional[str] = None
+    telefono: Optional[str] = None
 
 class PersonalRead(PersonalBase):
     id: int
@@ -39,6 +40,9 @@ class AsistenciaBase(BaseModel):
     cedula_identidad: str
     motivo: Optional[str] = "Ingreso Institucional"
     piso_destino: Optional[str] = "Planta Baja"
+    nombre_aux: Optional[str] = None
+    telefono_aux: Optional[str] = None
+    ente_aux: Optional[str] = None
 
 class AsistenciaRead(BaseModel):
     id: int
@@ -47,6 +51,9 @@ class AsistenciaRead(BaseModel):
     hora_entrada: datetime
     hora_salida: Optional[datetime] = None
     motivo: Optional[str]
+    nombre_aux: Optional[str]
+    telefono_aux: Optional[str]
+    ente_aux: Optional[str]
     registrado_por: Optional[int]
     
     class Config:

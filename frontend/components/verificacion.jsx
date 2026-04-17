@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Search, User, Briefcase, Clock, ArrowRight, UserPlus, CheckCircle, AlertCircle, ShieldCheck } from 'lucide-react';
+import { Search, User, Briefcase, Clock, ArrowRight, UserPlus, CheckCircle, AlertCircle, ShieldCheck, Phone } from 'lucide-react';
 
 const API_BASE_URL = '/api/asistencia';
 
@@ -9,6 +9,15 @@ const VerificationScreen = () => {
     const [isVisitor, setIsVisitor] = useState(false);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
+
+    // Estados para el formulario de visitante
+    const [visitorData, setVisitorData] = useState({
+        nombre: '',
+        ente: '',
+        piso: '',
+        motivo: '',
+        telefono: ''
+    });
 
     const handleSearch = async (value) => {
         setCedula(value);
@@ -41,7 +50,17 @@ const VerificationScreen = () => {
     const handleRegister = async () => {
         setLoading(true);
         try {
-            const response = await fetch(`${API_BASE_URL}/registrar?cedula=${cedula}`, {
+            let url = `${API_BASE_URL}/registrar?cedula=${cedula}`;
+            
+            if (isVisitor) {
+                url += `&nombre=${encodeURIComponent(visitorData.nombre)}`;
+                url += `&ente=${encodeURIComponent(visitorData.ente)}`;
+                url += `&piso=${encodeURIComponent(visitorData.piso)}`;
+                url += `&motivo=${encodeURIComponent(visitorData.motivo)}`;
+                url += `&telefono=${encodeURIComponent(visitorData.telefono)}`;
+            }
+
+            const response = await fetch(url, {
                 method: 'POST'
             });
             const data = await response.json();
@@ -52,9 +71,19 @@ const VerificationScreen = () => {
                     type: 'success', 
                     text: `${action} REGISTRADA: ${new Date(data.hora_salida || data.hora_entrada).toLocaleTimeString()}` 
                 });
+                
+                // Reiniciar estados después de éxito
                 setTimeout(() => {
                     setCedula('');
                     setPersonData(null);
+                    setIsVisitor(false);
+                    setVisitorData({
+                        nombre: '',
+                        ente: '',
+                        piso: '',
+                        motivo: '',
+                        telefono: ''
+                    });
                     setMessage(null);
                 }, 3000);
             } else {
@@ -181,25 +210,62 @@ const VerificationScreen = () => {
                                 <div className="space-y-5">
                                     <div className="space-y-1.5">
                                         <label className="text-[10px] font-black text-amber-500 uppercase ml-2 tracking-widest">Información Personal</label>
-                                        <input type="text" placeholder="NOMBRE COMPLETO DEL VISITANTE" className="w-full p-4 rounded-2xl border-2 border-amber-100 outline-none focus:border-guanta-accent font-black placeholder:text-gray-300 text-gray-700 bg-white" />
+                                        <input 
+                                            type="text" 
+                                            placeholder="NOMBRE COMPLETO DEL VISITANTE" 
+                                            value={visitorData.nombre}
+                                            onChange={(e) => setVisitorData({...visitorData, nombre: e.target.value})}
+                                            className="w-full p-4 rounded-2xl border-2 border-amber-100 outline-none focus:border-guanta-accent font-black placeholder:text-gray-300 text-gray-700 bg-white" 
+                                        />
                                     </div>
                                     <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black text-amber-500 uppercase ml-2 tracking-widest">Destino</label>
-                                            <input type="text" placeholder="DIRECCIÓN / ENTE" className="w-full p-4 rounded-2xl border-2 border-amber-100 outline-none focus:border-guanta-accent font-black bg-white" />
+                                            <label className="text-[10px] font-black text-amber-500 uppercase ml-2 tracking-widest">WhatsApp / Teléfono</label>
+                                            <input 
+                                                type="text" 
+                                                placeholder="NÚMERO DE TELÉFONO" 
+                                                value={visitorData.telefono}
+                                                onChange={(e) => setVisitorData({...visitorData, telefono: e.target.value})}
+                                                className="w-full p-4 rounded-2xl border-2 border-amber-100 outline-none focus:border-guanta-accent font-black bg-white" 
+                                            />
                                         </div>
                                         <div className="space-y-1.5">
-                                            <label className="text-[10px] font-black text-amber-500 uppercase ml-2 tracking-widest">Ubicación</label>
-                                            <input type="text" placeholder="PISO / OFICINA" className="w-full p-4 rounded-2xl border-2 border-amber-100 outline-none focus:border-guanta-accent font-black bg-white" />
+                                            <label className="text-[10px] font-black text-amber-500 uppercase ml-2 tracking-widest">Ente de Procedencia</label>
+                                            <input 
+                                                type="text" 
+                                                placeholder="DIRECCIÓN / ENTE" 
+                                                value={visitorData.ente}
+                                                onChange={(e) => setVisitorData({...visitorData, ente: e.target.value})}
+                                                className="w-full p-4 rounded-2xl border-2 border-amber-100 outline-none focus:border-guanta-accent font-black bg-white" 
+                                            />
                                         </div>
                                     </div>
-                                    <div className="space-y-1.5">
-                                        <label className="text-[10px] font-black text-amber-500 uppercase ml-2 tracking-widest">Observaciones</label>
-                                        <textarea placeholder="MOTIVO DEL INGRESO" className="w-full p-4 rounded-2xl border-2 border-amber-100 outline-none focus:border-guanta-accent font-black bg-white resize-none" rows="3"></textarea>
+                                    <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] font-black text-amber-500 uppercase ml-2 tracking-widest">Ubicación</label>
+                                            <input 
+                                                type="text" 
+                                                placeholder="PISO / OFICINA" 
+                                                value={visitorData.piso}
+                                                onChange={(e) => setVisitorData({...visitorData, piso: e.target.value})}
+                                                className="w-full p-4 rounded-2xl border-2 border-amber-100 outline-none focus:border-guanta-accent font-black bg-white" 
+                                            />
+                                        </div>
+                                        <div className="space-y-1.5">
+                                            <label className="text-[10px] font-black text-amber-500 uppercase ml-2 tracking-widest">Observaciones</label>
+                                            <textarea 
+                                                placeholder="MOTIVO DEL INGRESO" 
+                                                value={visitorData.motivo}
+                                                onChange={(e) => setVisitorData({...visitorData, motivo: e.target.value})}
+                                                className="w-full p-4 rounded-2xl border-2 border-amber-100 outline-none focus:border-guanta-accent font-black bg-white resize-none" 
+                                                rows="1"
+                                            ></textarea>
+                                        </div>
                                     </div>
                                     <button 
                                         onClick={handleRegister}
-                                        className="w-full bg-guanta-accent text-white font-black py-6 rounded-[1.5rem] hover:bg-amber-600 transition-all shadow-2xl shadow-amber-500/30 uppercase tracking-widest text-lg"
+                                        disabled={loading || !visitorData.nombre}
+                                        className="w-full bg-guanta-accent text-white font-black py-6 rounded-[1.5rem] hover:bg-amber-600 transition-all shadow-2xl shadow-amber-500/30 uppercase tracking-widest text-lg disabled:bg-gray-200"
                                     >
                                         Registrar Visita
                                     </button>
@@ -215,7 +281,7 @@ const VerificationScreen = () => {
                         <div className="w-1.5 h-1.5 bg-guanta-primary rounded-full animate-ping"></div>
                         <span>Operativo: Portería Central</span>
                     </div>
-                    <span>© {new Date().getFullYear()} Alcatdía de Guanta - Gestión Digital</span>
+                    <span>© {new Date().getFullYear()} Alcaldía de Guanta - Gestión Digital</span>
                 </div>
             </div>
         </div>

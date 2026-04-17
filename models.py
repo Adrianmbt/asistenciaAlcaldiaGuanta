@@ -39,6 +39,7 @@ class Personal(Base):
     entidad = Column(Enum(EntidadPersonal), default=EntidadPersonal.ALCALDIA)
     nombre_instituto = Column(String, nullable=True) # Ejemplo: IAMDE, IAMTUR
     cargo = Column(String)
+    telefono = Column(String, nullable=True)
     activo = Column(Integer, default=1)
 
 # --- MODELO DE ASISTENCIA (CRUD de Entradas/Salidas) ---
@@ -56,6 +57,11 @@ class Asistencia(Base):
     motivo = Column(String)
     piso_destino = Column(String)
     observaciones = Column(String)
+
+    # Campos adicionales para visitantes (o respaldo de personal)
+    nombre_aux = Column(String, nullable=True)
+    telefono_aux = Column(String, nullable=True)
+    ente_aux = Column(String, nullable=True)
     
     # Auditoría: ¿Qué usuario del sistema registró este movimiento?
     registrado_por = Column(Integer, ForeignKey("usuarios_sistema.id"))

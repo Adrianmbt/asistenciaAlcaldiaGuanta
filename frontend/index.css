@@ -2,19 +2,53 @@
 @tailwind components;
 @tailwind utilities;
 
+@layer base {
+  :root {
+    --guanta-primary: #F05438;
+    --guanta-accent: #FBBF24;
+  }
+}
+
+@layer utilities {
+  .bg-guanta-gradient {
+    background: linear-gradient(135deg, #F05438 0%, #B91C1C 100%);
+  }
+  .text-guanta-primary {
+    color: #F05438;
+  }
+  .bg-guanta-primary {
+    background-color: #F05438;
+  }
+  .border-guanta-primary {
+    border-color: #F05438;
+  }
+}
+
 :root {
-  font-family: 'Inter', system-ui, Avenir, Helvetica, Arial, sans-serif;
-  line-height: 1.5;
-  font-weight: 400;
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #FFFBF9;
 }
 
 body {
   margin: 0;
-  display: flex;
-  min-width: 320px;
   min-height: 100vh;
 }
 
 #root {
   width: 100%;
+}
+
+/* Scrollbar personalizada minimalista */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #f1f1f1;
+}
+::-webkit-scrollbar-thumb {
+  background: #F05438;
+  border-radius: 10px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #B91C1C;
 }

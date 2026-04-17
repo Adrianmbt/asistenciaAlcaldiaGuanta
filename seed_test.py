@@ -3,6 +3,8 @@ import models, auth
 from datetime import datetime, timedelta
 
 def seed():
+    # Crear tablas si no existen con el nuevo esquema
+    models.Base.metadata.create_all(bind=engine)
     db = SessionLocal()
     # 1. Crear Usuario Administrador y Portero
     if not db.query(models.UsuarioSistema).first():
@@ -26,11 +28,13 @@ def seed():
     if not db.query(models.Personal).first():
         p1 = models.Personal(
             cedula="12345678", nombre="Juan", apellido="Pérez",
-            entidad=models.EntidadPersonal.ALCALDIA, cargo="Analista de Hacienda"
+            entidad=models.EntidadPersonal.ALCALDIA, cargo="Analista de Hacienda",
+            telefono="0424-1234567"
         )
         p2 = models.Personal(
             cedula="20111222", nombre="María", apellido="Rodríguez",
-            entidad=models.EntidadPersonal.INSTITUTO_AUTONOMO, nombre_instituto="IAMDE", cargo="Instructor"
+            entidad=models.EntidadPersonal.INSTITUTO_AUTONOMO, nombre_instituto="IAMDE", cargo="Instructor",
+            telefono="0412-7654321"
         )
         db.add_all([p1, p2])
 
@@ -41,7 +45,9 @@ def seed():
             tipo_persona=models.TipoPersona.PERSONAL,
             hora_entrada=datetime.now() - timedelta(hours=4),
             motivo="Jornada Laboral",
-            piso_destino="Piso 2"
+            piso_destino="Piso 2",
+            telefono_aux="0424-1234567",
+            ente_aux="ALCALDIA"
         )
         db.add(asist)
 
