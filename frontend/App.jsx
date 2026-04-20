@@ -2,8 +2,9 @@ import React, { useState, useEffect } from 'react'
 import VerificationScreen from './components/verificacion'
 import AsistenciaTable from './components/list_table_asistencia'
 import GestionUsuarios from './components/gestion_usuarios'
+import GestionPersonal from './components/gestion_personal'
 import Login from './components/login'
-import { LayoutDashboard, UserCheck, Settings, LogOut as LogOutIcon, User, X, Save, ShieldCheck } from 'lucide-react'
+import { LayoutDashboard, UserCheck, Settings, LogOut as LogOutIcon, User, X, Save, ShieldCheck, Users } from 'lucide-react'
 
 function App() {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -165,6 +166,12 @@ function App() {
             <UserCheck size={20} /> Verificación
           </button>
           <button
+            onClick={() => { setActiveTab('personal'); }}
+            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'personal' ? 'bg-orange-50 text-guanta-primary shadow-inner shadow-orange-500/5' : 'text-gray-400 hover:bg-orange-50/50 hover:text-gray-600'}`}
+          >
+            <Users size={20} /> Personal
+          </button>
+          <button
             onClick={() => { setActiveTab('tabla'); fetchHoy(); }}
             className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'tabla' ? 'bg-orange-50 text-guanta-primary shadow-inner shadow-orange-500/5' : 'text-gray-400 hover:bg-orange-50/50 hover:text-gray-600'}`}
           >
@@ -232,6 +239,10 @@ function App() {
           ) : activeTab === 'usuarios' ? (
             <div className="animate-in slide-in-from-bottom-12 duration-700">
               <GestionUsuarios />
+            </div>
+          ) : activeTab === 'personal' ? (
+            <div className="animate-in slide-in-from-bottom-12 duration-700">
+              <GestionPersonal />
             </div>
           ) : (
             <div className="animate-in slide-in-from-right-12 duration-700">
