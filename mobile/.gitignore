@@ -1,0 +1,14 @@
+node_modules/
+venv/
+.env
+.DS_Store
+*.log
+*.sqlite
+*.db
+coverage/
+.nyc_output/
+dist/
+build/
+.gradle/
+.idea/
+.vscode/

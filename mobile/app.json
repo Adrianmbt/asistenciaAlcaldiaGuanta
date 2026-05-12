@@ -1,0 +1,32 @@
+{
+  "expo": {
+    "name": "Alcaldía de Guanta",
+    "slug": "alcaldia-guanta",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "splash": {
+      "image": "./assets/splash.png",
+      "resizeMode": "contain",
+      "backgroundColor": "#F05438"
+    },
+    "ios": {
+      "supportsTablet": false,
+      "bundleIdentifier": "ve.gob.guanta.acceso"
+    },
+    "android": {
+      "adaptiveIcon": {
+        "foregroundImage": "./assets/adaptive-icon.png",
+        "backgroundColor": "#F05438"
+      },
+      "package": "ve.gob.guanta.acceso"
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      "expo-secure-store"
+    ]
+  }
+}

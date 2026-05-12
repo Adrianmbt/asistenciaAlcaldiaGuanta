@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Copyright (C) 2014 The Android Open Source Project
+
+     Licensed under the Apache License, Version 2.0 (the "License");
+     you may not use this file except in compliance with the License.
+     You may obtain a copy of the License at
+
+          http://www.apache.org/licenses/LICENSE-2.0
+
+     Unless required by applicable law or agreed to in writing, software
+     distributed under the License is distributed on an "AS IS" BASIS,
+     WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+     See the License for the specific language governing permissions and
+     limitations under the License.
+-->
+<inset xmlns:android="http://schemas.android.com/apk/res/android"
+       android:insetLeft="@dimen/abc_edit_text_inset_horizontal_material"
+       android:insetRight="@dimen/abc_edit_text_inset_horizontal_material"
+       android:insetTop="@dimen/abc_edit_text_inset_top_material"
+       android:insetBottom="@dimen/abc_edit_text_inset_bottom_material"
+       android:paddingTop="12dp"
+       android:paddingBottom="12dp">
+
+    <selector>
+        <!--
+          This file is a copy of abc_edit_text_material (https://bit.ly/3k83X2z).
+          The item below with state_pressed="false" and state_focused="false" causes a crash.
+          Commenting it out.
+        -->
+        <item android:state_pressed="true" android:state_focused="true"/>
+        <item android:state_pressed="false" android:state_focused="false">
+            <shape>
+                <padding android:left="4dp" android:top="4dp" android:right="4dp" android:bottom="4dp" />
+                <size android:width="24dp" android:height="24dp" />
+                <solid android:color="@android:color/transparent"/>
+            </shape>
+        </item>
+    </selector>
+
+</inset>

@@ -24,19 +24,31 @@ def seed():
         )
         db.add_all([admin, portero])
 
-    # 2. Crear Personal de Prueba (Alcaldía e Institutos)
-    if not db.query(models.Personal).first():
-        p1 = models.Personal(
-            cedula="12345678", nombre="Juan", apellido="Pérez",
-            entidad=models.EntidadPersonal.ALCALDIA, cargo="Analista de Hacienda",
-            telefono="0424-1234567"
-        )
-        p2 = models.Personal(
-            cedula="20111222", nombre="María", apellido="Rodríguez",
-            entidad=models.EntidadPersonal.INSTITUTO_AUTONOMO, nombre_instituto="IAMDE", cargo="Instructor",
-            telefono="0412-7654321"
-        )
-        db.add_all([p1, p2])
+    # 2. Crear/Actualizar Personal de Prueba
+    personal_data = [
+        {
+            "cedula": "12345678", "nombre": "Juan", "apellido": "Pérez",
+            "entidad": models.EntidadPersonal.ALCALDIA, "cargo": "Analista de Hacienda",
+            "telefono": "0424-1234567", "huella_template": "HASH_EJEMPLO_JUAN_PEREZ"
+        },
+        {
+            "cedula": "20111222", "nombre": "María", "apellido": "Rodríguez",
+            "entidad": models.EntidadPersonal.INSTITUTO_AUTONOMO, "nombre_instituto": "IAMDE",
+            "cargo": "Instructor", "telefono": "0412-7654321", "huella_template": None
+        }
+    ]
+
+    for p_info in personal_data:
+        p = db.query(models.Personal).filter(models.Personal.cedula == p_info["cedula"]).first()
+        if p:
+            # Actualizar
+            p.nombre = p_info["nombre"]
+            p.huella_template = p_info["huella_template"]
+            p.cargo = p_info["cargo"]
+        else:
+            # Crear nuevo
+            nuevo_p = models.Personal(**p_info)
+            db.add(nuevo_p)
 
     # 3. Crear algunas asistencias de hoy (Simuladas)
     if not db.query(models.Asistencia).first():

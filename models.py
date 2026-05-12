@@ -40,6 +40,7 @@ class Personal(Base):
     nombre_instituto = Column(String, nullable=True) # Ejemplo: IAMDE, IAMTUR
     cargo = Column(String)
     telefono = Column(String, nullable=True)
+    huella_template = Column(String, nullable=True) # Hash o template biométrico en Base64
     activo = Column(Integer, default=1)
 
 # --- MODELO DE ASISTENCIA (CRUD de Entradas/Salidas) ---

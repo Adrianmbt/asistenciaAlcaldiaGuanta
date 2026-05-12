@@ -29,6 +29,27 @@ def verificar_cedula(cedula: str, db: Session = Depends(get_db)):
         "datos": None
     }
 
+@router.post("/biometria/verificar")
+def verificar_biometria(template: str, db: Session = Depends(get_db)):
+    """
+    Busca a una persona por su template biométrico (huella).
+    En una implementación real, esto podría requerir una librería de comparación.
+    """
+    persona = db.query(models.Personal).filter(
+        models.Personal.huella_template == template,
+        models.Personal.activo == 1
+    ).first()
+    
+    if not persona:
+        raise HTTPException(status_code=404, detail="Identidad biométrica no reconocida")
+        
+    return {
+        "cedula": persona.cedula,
+        "nombre": f"{persona.nombre} {persona.apellido}",
+        "entidad": persona.entidad,
+        "cargo": persona.cargo
+    }
+
 @router.post("/registrar", response_model=schemas.AsistenciaRead)
 def registrar_movimiento(
     cedula: str, 
@@ -39,7 +60,9 @@ def registrar_movimiento(
     ente: str = None,
     db: Session = Depends(get_db)
 ):
-    hoy = datetime.now().date()
+    ahora = datetime.now()
+    hoy = ahora.date()
+    es_tarde = ahora.hour >= 17 # Después de las 5 PM
     
     # 1. Buscar si ya tiene un registro hoy (entrada y posiblemente salida)
     registro_hoy = db.query(models.Asistencia).filter(
@@ -47,16 +70,27 @@ def registrar_movimiento(
         models.Asistencia.hora_entrada >= hoy
     ).order_by(models.Asistencia.hora_entrada.desc()).first()
 
+    # Buscar datos de la persona para saber si es administrativo
+    persona = db.query(models.Personal).filter(models.Personal.cedula == cedula).first()
+
     if registro_hoy:
-        # Si ya tiene entrada y salida hoy, ya no puede marcar nada
+        # Si ya tiene entrada y salida hoy, ya no puede marcar nada (a menos que sea otra entrada/salida)
         if registro_hoy.hora_salida:
+            # Si es tarde y ya tiene salida, quizás quiera re-entrar? No, mejor elevar error según el requerimiento.
             raise HTTPException(status_code=400, detail="Ya ha registrado su entrada y salida por el día de hoy.")
         
         # Si tiene entrada pero no salida, marcamos la salida
-        registro_hoy.hora_salida = datetime.now()
+        registro_hoy.hora_salida = ahora
         db.commit()
         db.refresh(registro_hoy)
         return registro_hoy
+    
+    # --- Lógica Especial después de las 5 PM para Personal Administrativo ---
+    if es_tarde and persona and persona.entidad == models.EntidadPersonal.ALCALDIA:
+        # Si no tiene registro previo hoy pero es después de las 5 PM, 
+        # marcamos una salida "huérfana" o asumimos que se le olvidó marcar entrada.
+        # Por ahora, seguiremos el flujo normal pero podríamos añadir una nota.
+        pass
 
     # 2. Si no tiene registro hoy, crear nueva Entrada
     persona = db.query(models.Personal).filter(models.Personal.cedula == cedula).first()

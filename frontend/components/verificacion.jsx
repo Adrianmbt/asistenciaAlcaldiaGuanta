@@ -9,8 +9,9 @@ const VerificationScreen = () => {
     const [isVisitor, setIsVisitor] = useState(false);
     const [loading, setLoading] = useState(false);
     const [message, setMessage] = useState(null);
+    const [mode, setMode] = useState('cedula'); // 'cedula' o 'biometric'
+    const [isScanning, setIsScanning] = useState(false);
 
-    // Estados para el formulario de visitante
     const [visitorData, setVisitorData] = useState({
         nombre: '',
         ente: '',
@@ -18,6 +19,50 @@ const VerificationScreen = () => {
         motivo: '',
         telefono: ''
     });
+
+    // Alertas Elevadas
+    const renderMessage = () => message && (
+        <div className={`mb-8 p-5 rounded-2xl flex items-center gap-4 animate-in slide-in-from-top-4 duration-500 shadow-sm ${
+            message.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'
+        }`}>
+            <div className={`p-2 rounded-full ${message.type === 'success' ? 'bg-emerald-500' : 'bg-rose-500'}`}>
+                {message.type === 'success' ? <CheckCircle size={18} className="text-white" /> : <AlertCircle size={18} className="text-white" />}
+            </div>
+            <p className="font-extrabold text-xs uppercase tracking-tight">{message.text}</p>
+        </div>
+    );
+
+    const handleBiometricSim = async () => {
+        setIsScanning(true);
+        setMessage(null);
+        
+        // Simulación de espera del hardware
+        setTimeout(async () => {
+            try {
+                // En un caso real, el template vendría del servicio local del captahuellas
+                const dummyTemplate = "HASH_EJEMPLO_JUAN_PEREZ"; 
+                const response = await fetch(`${API_BASE_URL}/biometria/verificar`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ template: dummyTemplate })
+                });
+                
+                const data = await response.json();
+                if (response.ok) {
+                    setCedula(data.cedula);
+                    setPersonData(data);
+                    setIsVisitor(false);
+                    setMessage({ type: 'success', text: 'HUELLA RECONOCIDA: ' + data.nombre });
+                } else {
+                    setMessage({ type: 'error', text: data.detail });
+                }
+            } catch (error) {
+                setMessage({ type: 'error', text: 'Error al conectar con el sensor' });
+            } finally {
+                setIsScanning(false);
+            }
+        }, 2000);
+    };
 
     const handleSearch = async (value) => {
         setCedula(value);
@@ -118,38 +163,71 @@ const VerificationScreen = () => {
 
                 <div className="p-10 -mt-6 bg-white rounded-t-[3rem] relative z-20">
                     {/* Alertas Elevadas */}
-                    {message && (
-                        <div className={`mb-8 p-5 rounded-2xl flex items-center gap-4 animate-in slide-in-from-top-4 duration-500 shadow-sm ${
-                            message.type === 'success' ? 'bg-emerald-50 text-emerald-700 border border-emerald-100' : 'bg-rose-50 text-rose-700 border border-rose-100'
-                        }`}>
-                            <div className={`p-2 rounded-full ${message.type === 'success' ? 'bg-emerald-500' : 'bg-rose-500'}`}>
-                                {message.type === 'success' ? <CheckCircle size={18} className="text-white" /> : <AlertCircle size={18} className="text-white" />}
+                    {renderMessage()}
+
+                    {/* Selector de Modo */}
+                    <div className="flex p-1.5 bg-gray-100 rounded-2xl mb-10 gap-2">
+                        <button 
+                            onClick={() => setMode('cedula')}
+                            className={`flex-1 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${mode === 'cedula' ? 'bg-white text-guanta-primary shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                        >
+                            Cédula Identidad
+                        </button>
+                        <button 
+                            onClick={() => setMode('biometric')}
+                            className={`flex-1 py-3 rounded-xl font-black text-[10px] uppercase tracking-widest transition-all ${mode === 'biometric' ? 'bg-white text-guanta-primary shadow-sm' : 'text-gray-400 hover:text-gray-600'}`}
+                        >
+                            Huella Dactilar
+                        </button>
+                    </div>
+
+                    {mode === 'cedula' ? (
+                        /* Input Cédula */
+                        <div className="relative mb-10 group">
+                            <label className="block text-[11px] font-black text-guanta-primary mb-3 uppercase tracking-[0.2em] ml-2">Identificación del Ciudadano</label>
+                            <div className="relative">
+                                <input
+                                    type="text"
+                                    value={cedula}
+                                    onChange={(e) => handleSearch(e.target.value)}
+                                    placeholder="INGRESE CÉDULA"
+                                    className="w-full pl-16 pr-4 py-6 bg-gray-50 border-2 border-transparent focus:border-guanta-primary focus:bg-white rounded-3xl outline-none transition-all text-3xl font-black tracking-tighter text-gray-800 shadow-inner group-hover:border-orange-200"
+                                />
+                                <div className="absolute left-6 top-1/2 -translate-y-1/2">
+                                    <Search className="text-guanta-primary opacity-50" size={32} />
+                                </div>
+                                {loading && (
+                                    <div className="absolute right-6 top-1/2 -translate-y-1/2">
+                                        <div className="animate-spin rounded-full h-7 w-7 border-[3px] border-guanta-primary border-t-transparent"></div>
+                                    </div>
+                                )}
                             </div>
-                            <p className="font-extrabold text-xs uppercase tracking-tight">{message.text}</p>
+                        </div>
+                    ) : (
+                        /* UI Biometría */
+                        <div className="mb-10 animate-in fade-in zoom-in duration-300">
+                            <div className={`p-10 rounded-[2.5rem] border-2 border-dashed flex flex-col items-center justify-center transition-all ${isScanning ? 'bg-orange-50 border-guanta-primary animate-pulse' : 'bg-gray-50 border-gray-200'}`}>
+                                <div className={`p-8 rounded-full mb-6 ${isScanning ? 'bg-guanta-primary shadow-2xl shadow-orange-500/50' : 'bg-gray-200'}`}>
+                                    <ShieldCheck size={64} className={isScanning ? 'text-white' : 'text-gray-400'} />
+                                </div>
+                                <h3 className="text-xl font-black text-gray-800 uppercase tracking-tighter mb-2">
+                                    {isScanning ? 'Escaneando Huella...' : 'Esperando Lector...'}
+                                </h3>
+                                <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest text-center max-w-[200px]">
+                                    Coloque el dedo sobre el sensor para validar identidad
+                                </p>
+                                
+                                {!personData && !isScanning && (
+                                    <button 
+                                        onClick={handleBiometricSim}
+                                        className="mt-8 bg-white border border-gray-200 px-6 py-2 rounded-full text-[10px] font-black text-gray-400 hover:text-guanta-primary hover:border-guanta-primary transition-all"
+                                    >
+                                        SIMULAR LECTURA SENSOR
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     )}
-
-                    {/* Input Neon Estilo Guanta */}
-                    <div className="relative mb-10 group">
-                        <label className="block text-[11px] font-black text-guanta-primary mb-3 uppercase tracking-[0.2em] ml-2">Identificación del Ciudadano</label>
-                        <div className="relative">
-                            <input
-                                type="text"
-                                value={cedula}
-                                onChange={(e) => handleSearch(e.target.value)}
-                                placeholder="INGRESE CÉDULA"
-                                className="w-full pl-16 pr-4 py-6 bg-gray-50 border-2 border-transparent focus:border-guanta-primary focus:bg-white rounded-3xl outline-none transition-all text-3xl font-black tracking-tighter text-gray-800 shadow-inner group-hover:border-orange-200"
-                            />
-                            <div className="absolute left-6 top-1/2 -translate-y-1/2">
-                                <Search className="text-guanta-primary opacity-50" size={32} />
-                            </div>
-                            {loading && (
-                                <div className="absolute right-6 top-1/2 -translate-y-1/2">
-                                    <div className="animate-spin rounded-full h-7 w-7 border-[3px] border-guanta-primary border-t-transparent"></div>
-                                </div>
-                            )}
-                        </div>
-                    </div>
 
                     {/* FICHA DE TRABAJADOR (Premium Orange) */}
                     {personData && (
@@ -182,6 +260,14 @@ const VerificationScreen = () => {
                                 </div>
 
                                 <div className="mt-10">
+                                    {new Date().getHours() >= 17 && personData.entidad === 'alcaldia' && (
+                                        <div className="mb-4 bg-orange-100/50 p-4 rounded-2xl border border-orange-200 flex items-center gap-3">
+                                            <div className="bg-orange-500 p-1.5 rounded-lg">
+                                                <Clock size={16} className="text-white" />
+                                            </div>
+                                            <p className="text-[10px] font-black text-orange-700 uppercase tracking-tight">Fuera de Horario: Registro de Salida Automático</p>
+                                        </div>
+                                    )}
                                     <button 
                                         onClick={handleRegister}
                                         disabled={loading}
