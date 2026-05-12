@@ -1,20 +1,19 @@
 # 🏛️ Sistema de Control de Acceso - Alcaldía de Guanta
 
-Este es un sistema integral de gestión y control de asistencia diseñado para la Portería Central de la Alcaldía de Guanta. Permite la verificación rápida de personal institucional y el registro detallado de visitantes, utilizando una arquitectura moderna de alto rendimiento.
+Este es un sistema integral de gestión y control de asistencia diseñado para la Portería Central de la Alcaldía de Guanta. Permite la verificación rápida de personal institucional y el registro detallado de visitantes, utilizando una arquitectura moderna de alto rendimiento y soporte para biometría.
 
 ## ✨ Características Principales
 
-- **Identidad Institucional**: Diseño premium alineado con la paleta de colores oficial (Naranja, Dorado, Rosa).
-- **Verificación Dual**: Diferenciación automática entre Personal de Nómina y Visitantes Externos.
-- **Dashboard en Tiempo Real**: Tabla de gestión dinámica para monitorear ingresos y marcar salidas.
-- **Arquitectura Robusta**: Backend en FastAPI con base de datos persistente y migraciones mediante Alembic.
-- **Interfaz Reactiva**: Frontend construido con React + Vite, Tailwind CSS y Lucide Icons.
+- **📱 Aplicación Móvil Premium**: App desarrollada en **React Native (Expo SDK 54)** con diseño institucional para dispositivos Android/iOS.
+- **🆔 Validación Biométrica**: Soporte para verificación mediante huella dactilar (Frontend y Mobile).
+- **🕰️ Inteligencia Horaria**: Lógica de salida automática después de las 5:00 PM para personal administrativo.
+- **🛡️ Seguridad Institucional**: Sistema de roles (Admin/Portero) y reporte de vulnerabilidades auditado en `QA.md`.
+- **🎨 Identidad Visual**: Interfaz "Guanta Style" con gradientes modernos, modo oscuro y estética de alto nivel.
+- **📊 Gestión Centralizada**: Dashboard para monitoreo en tiempo real de ingresos y egresos.
 
 ---
 
-## 🚀 Guía de Instalación (Para trabajar desde otro equipo)
-
-Si deseas continuar el desarrollo o instalar el sistema en una nueva máquina, sigue estos pasos:
+## 🚀 Guía de Instalación (Para desarrollo o despliegue)
 
 ### 1. Clonar el Repositorio
 ```bash
@@ -23,74 +22,71 @@ cd asistenciaAlcaldiaGuanta
 ```
 
 ### 2. Configuración del Backend (Python 3.10+)
-1.  **Crear entorno virtual:**
+1.  **Entorno virtual e instalación:**
     ```bash
     python -m venv venv
+    .\venv\Scripts\activate
+    pip install fastapi uvicorn sqlalchemy alembic passlib[bcrypt] python-jose[cryptography] python-multipart
     ```
-2.  **Activar entorno:**
-    - Windows: `.\venv\Scripts\activate`
-    - Linux/Mac: `source venv/bin/activate`
-3.  **Instalar dependencias:**
+2.  **Preparar Base de Datos:**
     ```bash
-    pip install -r requirements.txt
-    ```
-    *(Si no existe requirements.txt, instalar manualmente: fastapi, uvicorn, sqlalchemy, alembic, passlib[bcrypt], python-jose[cryptography], python-multipart)*
-4.  **Inicializar Base de Datos:**
-    ```bash
-    # Ejecutar las migraciones
-    alembic upgrade head
-    # Cargar datos de prueba (Personal y Usuarios)
+    # Aplicar esquema actual
+    python patch_db.py
+    # Cargar usuarios y personal de prueba
     python seed_test.py
     ```
 
-### 3. Configuración del Frontend (Node.js)
-1.  **Entrar a la carpeta frontend:**
-    ```bash
-    cd frontend
-    ```
-2.  **Instalar dependencias:**
-    ```bash
-    npm install
-    ```
+### 3. Configuración del Frontend (Web)
+```bash
+cd frontend
+npm install
+npm run dev
+```
+
+### 4. Configuración de la App Móvil (Expo)
+```bash
+cd mobile
+npm install
+# Para iniciar el servidor de desarrollo
+npx expo start -c
+```
 
 ---
 
 ## 🛠️ Cómo Ejecutar el Proyecto
 
-Debes tener dos terminales abiertas:
+Para que el sistema funcione integralmente en la red local:
 
-**Terminal 1 (Backend):**
+**Servidor Backend (Escuchando en toda la red):**
 ```bash
-# Desde la raíz del proyecto
-uvicorn main:app --reload
+uvicorn main:app --reload --host 0.0.0.0 --port 8000
 ```
-*El API estará disponible en `http://localhost:8000`*
 
-**Terminal 2 (Frontend):**
-```bash
-# Desde la carpeta /frontend
-npm run dev
-```
-*La aplicación estará disponible en `http://localhost:3000`*
+**Frontend Web:** `http://localhost:3000`
+
+**App Móvil:** Abre la app **Expo Go** en tu celular y escanea el código QR generado por la terminal. Asegúrate de que el celular esté en la misma red Wi-Fi que el servidor.
 
 ---
 
 ## 📂 Estructura del Proyecto
 
+- `/mobile`: Código fuente de la aplicación móvil (Expo SDK 54).
+- `/frontend`: Interfaz web para la PC de portería (React/Vite).
 - `/routes`: Endpoints de la API (Asistencia, Usuarios, Auth).
-- `/migrations`: Historial de cambios en la base de datos (Alembic).
-- `/frontend/components`: Componentes modulares de la interfaz (Verificación, Tablas).
-- `models.py`: Definición de tablas de la base de datos.
-- `schemas.py`: Validaciones de datos Pydantic.
-- `seed_test.py`: Script para poblar la base de datos inicial.
+- `models.py`: Modelos de base de datos (Soporta Biometría).
+- `QA.md`: Informe detallado de seguridad y puntos de mejora.
+- `patch_db.py`: Script para actualizar el esquema de la BD sin pérdida de datos.
 
 ---
 
-## 🔐 Credenciales de Prueba (Seed)
-
-- **Administrador**: `admin_guanta` / `Guanta2026*`
-- **Operador de Guardia**: `porteria1` / `Acceso2026`
-- **Cédula de prueba**: `12345678` (Juan Pérez)
+## 🔐 Credenciales y Datos de Prueba
+- **Admin**: `admin` / `admin123`
+- **Admin Sistemas**: `admin_guanta` / `Guanta2026*`
+- **Portero**: `portero` / `portero123`
+- **Test Biometría**: "Juan Pérez" (Cédula `12345678`) tiene un template de huella precargado para simulación.
 
 ---
-*Desarrollado para la Gestión Digital de la Alcaldía de Guanta.*
+> [!WARNING]
+> **Seguridad**: Consulte el archivo `QA.md` antes de exponer este sistema a redes públicas. Se recomienda configurar un Firewall para el puerto 8000.
+
+*Desarrollado para la Gestión Digital de la Alcaldía de Guanta - 2026.*
