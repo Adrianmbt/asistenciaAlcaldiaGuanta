@@ -107,14 +107,14 @@ const GestionUsuarios = () => {
                 
                 <button 
                     onClick={handleOpenCreate}
-                    className="flex items-center gap-3 px-8 py-4 bg-guanta-gradient text-white rounded-[1.5rem] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-orange-500/20"
+                    className="flex items-center gap-3 px-8 py-4 bg-guanta-gradient text-white rounded-[1.5rem] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-teal-500/20"
                 >
                     <UserPlus size={20} /> Nuevo Usuario
                 </button>
             </div>
 
             {/* Filtros y Buscador */}
-            <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-orange-50 mb-8 flex items-center gap-4">
+            <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-cyan-50 mb-8 flex items-center gap-4">
                 <div className="relative flex-1 group">
                     <input
                         type="text"
@@ -131,10 +131,10 @@ const GestionUsuarios = () => {
             </div>
 
             {/* Listado de Usuarios */}
-            <div className="bg-white rounded-[2rem] shadow-2xl shadow-orange-500/5 border border-orange-50 overflow-hidden">
+            <div className="bg-white rounded-[2rem] shadow-2xl shadow-teal-500/5 border border-cyan-50 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-gray-50/50 text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-orange-50">
+                        <tr className="bg-gray-50/50 text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-cyan-50">
                             <th className="px-8 py-5">Usuario / Nombre</th>
                             <th className="px-8 py-5">Email Corporativo</th>
                             <th className="px-8 py-5">Rol / Permisos</th>
@@ -142,12 +142,12 @@ const GestionUsuarios = () => {
                             <th className="px-8 py-5 text-right">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-orange-50/30">
+                    <tbody className="divide-y divide-cyan-50/30">
                         {filteredUsers.map((user) => (
-                            <tr key={user.id} className={`group hover:bg-orange-50/20 transition-all ${user.activo === 0 ? 'opacity-50' : ''}`}>
+                            <tr key={user.id} className={`group hover:bg-cyan-50/20 transition-all ${user.activo === 0 ? 'opacity-50' : ''}`}>
                                 <td className="px-8 py-6">
                                     <div className="flex items-center gap-4">
-                                        <div className={`p-3 rounded-2xl ${user.rol === 'admin' ? 'bg-orange-100 text-guanta-primary' : 'bg-blue-100 text-blue-600'}`}>
+                                        <div className={`p-3 rounded-2xl ${user.rol === 'admin' ? 'bg-cyan-100 text-guanta-primary' : 'bg-blue-100 text-blue-600'}`}>
                                             <User size={20} />
                                         </div>
                                         <div>
@@ -163,7 +163,7 @@ const GestionUsuarios = () => {
                                     </div>
                                 </td>
                                 <td className="px-8 py-6">
-                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase ${user.rol === 'admin' ? 'bg-orange-100 text-guanta-primary' : 'bg-blue-100 text-blue-600'}`}>
+                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase ${user.rol === 'admin' ? 'bg-cyan-100 text-guanta-primary' : 'bg-blue-100 text-blue-600'}`}>
                                         {user.rol}
                                     </span>
                                 </td>
@@ -207,10 +207,10 @@ const GestionUsuarios = () => {
             {/* Modal CRUD Usuarios */}
             {isModalOpen && (
                 <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-white w-full max-w-lg rounded-[2.5rem] p-10 shadow-2xl animate-in zoom-in-95 duration-200 border border-orange-100">
+                    <div className="bg-white w-full max-w-lg rounded-[2.5rem] p-10 shadow-2xl animate-in zoom-in-95 duration-200 border border-cyan-100">
                         <div className="flex justify-between items-center mb-10">
                             <div className="flex items-center gap-4">
-                                <div className="p-3 bg-orange-100 rounded-2xl text-guanta-primary shadow-lg shadow-orange-500/20">
+                                <div className="p-3 bg-cyan-100 rounded-2xl text-guanta-primary shadow-lg shadow-teal-500/20">
                                     <UserPlus size={24} />
                                 </div>
                                 <div>
@@ -289,7 +289,7 @@ const GestionUsuarios = () => {
                             <button 
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-5 bg-guanta-gradient text-white rounded-[1.5rem] font-black text-lg uppercase tracking-widest shadow-xl shadow-orange-500/30 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 mt-4"
+                                className="w-full py-5 bg-guanta-gradient text-white rounded-[1.5rem] font-black text-lg uppercase tracking-widest shadow-xl shadow-teal-500/30 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 mt-4"
                             >
                                 <Save size={20} /> {isEditing ? 'Actualizar Usuario' : 'Crear Acceso'}
                             </button>

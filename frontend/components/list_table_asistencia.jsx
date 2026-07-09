@@ -24,7 +24,7 @@ const AsistenciaTable = ({ registros, onEdit, onDelete, onMarcarSalida }) => {
             const doc = new jsPDF();
             
             // Configuración de Colores Guanta
-            const primaryColor = [240, 84, 56]; // #F05438
+            const primaryColor = [0, 159, 161]; // #009FA1
             
             let reportData = [];
             let title = "";
@@ -86,39 +86,39 @@ const AsistenciaTable = ({ registros, onEdit, onDelete, onMarcarSalida }) => {
     };
 
     return (
-        <div className="bg-white rounded-[2rem] shadow-2xl shadow-orange-500/5 border border-orange-50 overflow-hidden font-sans">
+        <div className="bg-white rounded-[2rem] shadow-2xl shadow-teal-500/5 border border-cyan-50 overflow-hidden font-sans">
             {/* Barra de Herramientas Superior */}
-            <div className="p-8 border-b border-orange-50 bg-orange-50/20 flex flex-col gap-6">
+            <div className="p-8 border-b border-cyan-50 bg-cyan-50/20 flex flex-col gap-6">
                 
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="relative w-full md:w-[28rem] group">
                         <input
                             type="text"
                             placeholder="Buscar por cédula o nombre..."
-                            className="w-full pl-12 pr-4 py-3 bg-white border-2 border-transparent focus:border-guanta-primary rounded-2xl shadow-sm focus:shadow-orange-200/50 outline-none transition-all font-bold text-gray-700"
+                            className="w-full pl-12 pr-4 py-3 bg-white border-2 border-transparent focus:border-guanta-primary rounded-2xl shadow-sm focus:shadow-teal-200/50 outline-none transition-all font-bold text-gray-700"
                             onChange={(e) => setFilter(e.target.value)}
                         />
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-guanta-primary opacity-40 group-focus-within:opacity-100 transition-opacity" size={20} />
                     </div>
 
-                    <div className="flex bg-white p-1 rounded-2xl border border-orange-100 shadow-sm">
+                    <div className="flex bg-white p-1 rounded-2xl border border-cyan-100 shadow-sm">
                         <button
                             onClick={() => setFilterType("TODOS")}
-                            className={`px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-all ${filterType === 'TODOS' ? 'bg-guanta-primary text-white shadow-lg shadow-orange-500/30' : 'text-gray-400 hover:text-guanta-primary'}`}
+                            className={`px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-all ${filterType === 'TODOS' ? 'bg-guanta-primary text-white shadow-lg shadow-teal-500/30' : 'text-gray-400 hover:text-guanta-primary'}`}
                         >TODOS</button>
                         <button
                             onClick={() => setFilterType("personal")}
-                            className={`px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-all ${filterType === 'personal' ? 'bg-guanta-primary text-white shadow-lg shadow-orange-500/30' : 'text-gray-400 hover:text-guanta-primary'}`}
+                            className={`px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-all ${filterType === 'personal' ? 'bg-guanta-primary text-white shadow-lg shadow-teal-500/30' : 'text-gray-400 hover:text-guanta-primary'}`}
                         >EMPLEADOS</button>
                         <button
                             onClick={() => setFilterType("visitante")}
-                            className={`px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-all ${filterType === 'visitante' ? 'bg-guanta-accent text-white shadow-lg shadow-amber-500/30' : 'text-gray-400 hover:text-guanta-accent'}`}
+                            className={`px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-all ${filterType === 'visitante' ? 'bg-guanta-accent text-white shadow-lg shadow-teal-500/30' : 'text-gray-400 hover:text-guanta-accent'}`}
                         >VISITANTES</button>
                     </div>
                 </div>
 
                 {/* Botones de Reportes PDF */}
-                <div className="flex flex-wrap gap-3 items-center border-t border-orange-50 pt-6">
+                <div className="flex flex-wrap gap-3 items-center border-t border-cyan-50 pt-6">
                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">Exportar Reportes:</span>
                     <button 
                         onClick={() => exportToPDF('COMPLETO')}
@@ -128,13 +128,13 @@ const AsistenciaTable = ({ registros, onEdit, onDelete, onMarcarSalida }) => {
                     </button>
                     <button 
                         onClick={() => exportToPDF('PERSONAL')}
-                        className="flex items-center gap-2 px-4 py-2 bg-guanta-primary text-white rounded-xl text-[10px] font-black tracking-widest hover:bg-orange-600 transition-all shadow-lg shadow-orange-200"
+                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
                     >
                         <UserCheck size={14} /> PERSONAL
                     </button>
                     <button 
                         onClick={() => exportToPDF('VISITANTE')}
-                        className="flex items-center gap-2 px-4 py-2 bg-guanta-accent text-white rounded-xl text-[10px] font-black tracking-widest hover:bg-amber-500 transition-all shadow-lg shadow-amber-200"
+                        className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-xl text-[10px] font-black tracking-widest hover:bg-amber-600 transition-all shadow-lg shadow-amber-200"
                     >
                         <UserPlus size={14} /> VISITANTES
                     </button>
@@ -145,7 +145,7 @@ const AsistenciaTable = ({ registros, onEdit, onDelete, onMarcarSalida }) => {
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-white text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-orange-50">
+                        <tr className="bg-white text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-cyan-50">
                             <th className="px-8 py-5">Identificación / Nombre</th>
                             <th className="px-8 py-5">Origen / Ente</th>
                             <th className="px-8 py-5 text-center">Registro</th>
@@ -153,12 +153,12 @@ const AsistenciaTable = ({ registros, onEdit, onDelete, onMarcarSalida }) => {
                             <th className="px-8 py-5 text-right">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-orange-50/50">
+                    <tbody className="divide-y divide-cyan-50/50">
                         {filteredData.map((reg) => (
-                            <tr key={reg.id} className="group hover:bg-orange-50/30 transition-all duration-300">
+                            <tr key={reg.id} className="group hover:bg-cyan-50/30 transition-all duration-300">
                                 <td className="px-8 py-6">
                                     <div className="flex items-center gap-4">
-                                        <div className={`p-2 rounded-xl ${reg.tipo_persona === 'personal' ? 'bg-orange-100' : 'bg-amber-100'}`}>
+                                        <div className={`p-2 rounded-xl ${reg.tipo_persona === 'personal' ? 'bg-cyan-100' : 'bg-teal-100'}`}>
                                              {reg.tipo_persona === 'personal' ? <User size={18} className="text-guanta-primary"/> : <UserPlus size={18} className="text-guanta-accent"/>}
                                         </div>
                                         <div>
@@ -171,7 +171,7 @@ const AsistenciaTable = ({ registros, onEdit, onDelete, onMarcarSalida }) => {
                                 </td>
                                 <td className="px-8 py-6">
                                     <div className="flex flex-col">
-                                        <span className={`inline-flex items-center w-max px-3 py-1 rounded-full text-[9px] font-black tracking-tighter uppercase mb-1 ${reg.tipo_persona === 'personal' ? 'bg-orange-100 text-guanta-primary' : 'bg-amber-100 text-amber-700'}`}>
+                                        <span className={`inline-flex items-center w-max px-3 py-1 rounded-full text-[9px] font-black tracking-tighter uppercase mb-1 ${reg.tipo_persona === 'personal' ? 'bg-cyan-100 text-guanta-primary' : 'bg-teal-100 text-teal-700'}`}>
                                             {reg.tipo_persona === 'personal' ? 'Institucional' : 'Visitante'}
                                         </span>
                                         <span className="text-[11px] font-bold text-gray-500 uppercase">{reg.ente || 'Sin Ente'}</span>
@@ -212,7 +212,7 @@ const AsistenciaTable = ({ registros, onEdit, onDelete, onMarcarSalida }) => {
                                                 <LogOut size={16} />
                                             </button>
                                         )}
-                                        <button onClick={() => onEdit(reg)} className="p-3 bg-orange-100 text-guanta-primary rounded-xl hover:bg-guanta-primary hover:text-white transition-all" title="Editar">
+                                        <button onClick={() => onEdit(reg)} className="p-3 bg-cyan-100 text-guanta-primary rounded-xl hover:bg-guanta-primary hover:text-white transition-all" title="Editar">
                                             <Edit2 size={16} />
                                         </button>
                                         <button onClick={() => onDelete(reg.id)} className="p-3 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition-all" title="Eliminar">

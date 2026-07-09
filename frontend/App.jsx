@@ -145,9 +145,9 @@ function App() {
     <div className="min-h-screen bg-[#FFFBF9] flex flex-col md:flex-row font-sans animate-in fade-in duration-700">
 
       {/* Sidebar Institucional Premium */}
-      <aside className="w-full md:w-[320px] bg-white border-r border-orange-100/50 p-10 flex flex-col gap-12 relative">
+      <aside className="w-full md:w-[320px] bg-white border-r border-cyan-100/50 p-10 flex flex-col gap-12 relative">
         <div className="flex flex-col items-center gap-6">
-          <div className="relative group p-1 bg-white rounded-full shadow-lg border border-orange-50">
+          <div className="relative group p-1 bg-white rounded-full shadow-lg border border-cyan-50">
             <div className="absolute inset-0 bg-guanta-primary blur-3xl opacity-5 group-hover:opacity-10 transition-opacity"></div>
             <img src="/img/logo_guanta.png" alt="Logo Guanta" className="w-24 h-24 relative z-10 transition-transform group-hover:scale-110 duration-500 rounded-full object-cover" />
           </div>
@@ -161,19 +161,19 @@ function App() {
           <div className="text-[10px] font-black text-gray-300 uppercase tracking-widest ml-4 mb-2">Operaciones</div>
           <button
             onClick={() => setActiveTab('verificacion')}
-            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'verificacion' ? 'bg-orange-50 text-guanta-primary shadow-inner shadow-orange-500/5' : 'text-gray-400 hover:bg-orange-50/50 hover:text-gray-600'}`}
+            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'verificacion' ? 'bg-cyan-50 text-guanta-primary shadow-inner shadow-teal-500/5' : 'text-gray-400 hover:bg-cyan-50/50 hover:text-gray-600'}`}
           >
             <UserCheck size={20} /> Verificación
           </button>
           <button
             onClick={() => { setActiveTab('personal'); }}
-            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'personal' ? 'bg-orange-50 text-guanta-primary shadow-inner shadow-orange-500/5' : 'text-gray-400 hover:bg-orange-50/50 hover:text-gray-600'}`}
+            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'personal' ? 'bg-cyan-50 text-guanta-primary shadow-inner shadow-teal-500/5' : 'text-gray-400 hover:bg-cyan-50/50 hover:text-gray-600'}`}
           >
             <Users size={20} /> Personal
           </button>
           <button
             onClick={() => { setActiveTab('tabla'); fetchHoy(); }}
-            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'tabla' ? 'bg-orange-50 text-guanta-primary shadow-inner shadow-orange-500/5' : 'text-gray-400 hover:bg-orange-50/50 hover:text-gray-600'}`}
+            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'tabla' ? 'bg-cyan-50 text-guanta-primary shadow-inner shadow-teal-500/5' : 'text-gray-400 hover:bg-cyan-50/50 hover:text-gray-600'}`}
           >
             <LayoutDashboard size={20} /> Movimientos
           </button>
@@ -181,20 +181,20 @@ function App() {
           <div className="text-[10px] font-black text-gray-300 uppercase tracking-widest ml-4 mt-6 mb-2">Administración</div>
           <button
             onClick={() => setActiveTab('usuarios')}
-            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'usuarios' ? 'bg-orange-50 text-guanta-primary shadow-inner shadow-orange-500/5' : 'text-gray-400 hover:bg-orange-50/50 hover:text-gray-600'}`}
+            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'usuarios' ? 'bg-cyan-50 text-guanta-primary shadow-inner shadow-teal-500/5' : 'text-gray-400 hover:bg-cyan-50/50 hover:text-gray-600'}`}
           >
             <ShieldCheck size={20} /> Seguridad
           </button>
-          <button className="flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest text-gray-400 hover:bg-orange-50/50 transition-all">
+          <button className="flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest text-gray-400 hover:bg-cyan-50/50 transition-all">
             <Settings size={20} /> Perfil
           </button>
         </nav>
 
-        <div className="mt-auto pt-10 border-t border-orange-50">
-          <div className="bg-gradient-to-br from-orange-50 to-white p-6 rounded-[2rem] border border-orange-100 shadow-sm relative overflow-hidden group">
+        <div className="mt-auto pt-10 border-t border-cyan-50">
+          <div className="bg-gradient-to-br from-cyan-50 to-white p-6 rounded-[2rem] border border-cyan-100 shadow-sm relative overflow-hidden group">
             <div className="absolute -top-10 -right-10 w-24 h-24 bg-guanta-primary/5 rounded-full blur-2xl group-hover:bg-guanta-primary/10 transition-all"></div>
             <div className="flex items-center gap-4 mb-4 relative z-10">
-              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-orange-500/10 border border-orange-50">
+              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-teal-500/10 border border-cyan-50">
                 <User size={24} className="text-guanta-primary" />
               </div>
               <div className="flex-1 overflow-hidden">
@@ -249,28 +249,28 @@ function App() {
               <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
                   <h2 className="text-6xl font-black text-gray-900 tracking-tighter leading-none mb-3">Sistema de Control de Acceso</h2>
-                  <p className="text-guanta-primary font-black uppercase text-xs tracking-[0.4em] ml-1 bg-orange-100/50 px-4 py-1.5 rounded-full inline-block">Control de Acceso del Edificio Administrativo</p>
+                  <p className="text-guanta-primary font-black uppercase text-xs tracking-[0.4em] ml-1 bg-cyan-100/50 px-4 py-1.5 rounded-full inline-block">Control de Acceso del Edificio Administrativo</p>
                 </div>
 
-                <div className="bg-white p-2 rounded-[2rem] border border-orange-100 shadow-2xl shadow-orange-500/5 flex items-center gap-2">
-                  <div className="bg-orange-50 px-6 py-4 rounded-[1.5rem] flex items-center gap-5">
+                <div className="bg-white p-2 rounded-[2rem] border border-cyan-100 shadow-2xl shadow-teal-500/5 flex items-center gap-2">
+                  <div className="bg-cyan-50 px-6 py-4 rounded-[1.5rem] flex items-center gap-5">
                     <div className="text-center">
                       <div className="text-[9px] font-black text-guanta-primary uppercase tracking-widest mb-1 underline decoration-2 underline-offset-4">HOY</div>
                       <div className="text-3xl font-black text-gray-900 leading-none">{registros.length}</div>
                     </div>
-                    <div className="w-[1px] h-10 bg-orange-200/50"></div>
+                    <div className="w-[1px] h-10 bg-cyan-200/50"></div>
                     <div className="text-left">
                       <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Registros</div>
                       <div className="text-[10px] font-bold text-gray-500">PROCESADOS</div>
                     </div>
                   </div>
-                  <button onClick={fetchHoy} className="p-5 hover:bg-orange-50 rounded-[1.5rem] text-guanta-primary transition-all group active:scale-90">
+                  <button onClick={fetchHoy} className="p-5 hover:bg-cyan-50 rounded-[1.5rem] text-guanta-primary transition-all group active:scale-90">
                     <LayoutDashboard size={24} className="group-hover:rotate-12 transition-transform" />
                   </button>
                 </div>
               </div>
 
-              <div className="shadow-2xl shadow-orange-500/10 rounded-[2rem] overflow-hidden">
+              <div className="shadow-2xl shadow-teal-500/10 rounded-[2rem] overflow-hidden">
                 <AsistenciaTable
                   registros={registros}
                   onMarcarSalida={handleMarcarSalida}
@@ -286,10 +286,10 @@ function App() {
       {/* MODAL DE EDICIÓN PREMIUM */}
       {isEditModalOpen && currentEdit && (
         <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-md flex items-center justify-center p-6">
-          <div className="bg-white w-full max-w-lg rounded-[3rem] p-12 shadow-2xl animate-in zoom-in-95 duration-300 border border-orange-100">
+          <div className="bg-white w-full max-w-lg rounded-[3rem] p-12 shadow-2xl animate-in zoom-in-95 duration-300 border border-cyan-100">
             <div className="flex justify-between items-center mb-10">
               <div className="flex items-center gap-4">
-                <div className="p-4 bg-orange-100 rounded-3xl text-guanta-primary shadow-lg shadow-orange-500/20">
+                <div className="p-4 bg-cyan-100 rounded-3xl text-guanta-primary shadow-lg shadow-teal-500/20">
                   <Save size={24} />
                 </div>
                 <div>
@@ -343,7 +343,7 @@ function App() {
 
               <button
                 onClick={handleSaveEdit}
-                className="w-full py-6 bg-guanta-gradient text-white rounded-[2rem] font-black text-lg uppercase tracking-widest shadow-2xl shadow-orange-600/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 mt-4"
+                className="w-full py-6 bg-guanta-gradient text-white rounded-[2rem] font-black text-lg uppercase tracking-widest shadow-2xl shadow-teal-600/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 mt-4"
               >
                 <Save size={22} /> Guardar Movimiento
               </button>

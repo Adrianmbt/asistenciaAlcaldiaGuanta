@@ -6,6 +6,35 @@ from routes import usuarios, asistencia, auth_routes, personal
 # Crear tablas en la DB
 models.Base.metadata.create_all(bind=database.engine)
 
+# Seed datos iniciales (cargos, departamentos, entes si están vacíos)
+def seed_referencias():
+    db = database.SessionLocal()
+    try:
+        if not db.query(models.Cargo).first():
+            db.add_all([
+                models.Cargo(nombre="Analista", descripcion="Analista institucional"),
+                models.Cargo(nombre="Director", descripcion="Director de área"),
+                models.Cargo(nombre="Oficial de Seguridad", descripcion="Portería y vigilancia"),
+            ])
+        if not db.query(models.Departamento).first():
+            db.add_all([
+                models.Departamento(nombre="Hacienda"),
+                models.Departamento(nombre="Recursos Humanos"),
+                models.Departamento(nombre="Seguridad"),
+            ])
+        if not db.query(models.Ente).first():
+            db.add_all([
+                models.Ente(nombre="Alcaldía de Guanta", siglas="ALC", tipo="alcaldia"),
+                models.Ente(nombre="IAMDE", siglas="IAMDE", tipo="instituto_autonomo"),
+            ])
+        db.commit()
+    except Exception:
+        db.rollback()
+    finally:
+        db.close()
+
+seed_referencias()
+
 app = FastAPI(title="API Control de Acceso - Alcaldía de Guanta")
 
 # Configuración de CORS para React/Frontend

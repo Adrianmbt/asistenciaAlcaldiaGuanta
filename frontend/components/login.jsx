@@ -46,7 +46,7 @@ const Login = ({ onLoginSuccess }) => {
 
     return (
         <div className="min-h-screen bg-[#FFFBF9] flex items-center justify-center p-6 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
-            <div className="w-full max-w-[1100px] bg-white rounded-[3rem] shadow-2xl flex flex-col md:flex-row overflow-hidden border border-orange-50 animate-in fade-in zoom-in-95 duration-700">
+            <div className="w-full max-w-[1100px] bg-white rounded-[3rem] shadow-2xl flex flex-col md:flex-row overflow-hidden border border-cyan-50 animate-in fade-in zoom-in-95 duration-700">
                 
                 {/* Panel Izquierdo: Visual & Branding */}
                 <div className="hidden md:flex md:w-1/2 bg-guanta-gradient p-16 flex-col justify-between relative overflow-hidden">
@@ -60,7 +60,7 @@ const Login = ({ onLoginSuccess }) => {
                         <h1 className="text-6xl font-black text-white tracking-tighter leading-none mb-4">
                             SISTEMA DE<br />CONTROL<br />DE ACCESO
                         </h1>
-                        <p className="text-orange-100 font-bold uppercase tracking-[0.4em] text-xs bg-white/10 py-2 px-4 rounded-full inline-block border border-white/20">
+                        <p className="text-cyan-100 font-bold uppercase tracking-[0.4em] text-xs bg-white/10 py-2 px-4 rounded-full inline-block border border-white/20">
                             Alcaldía de Guanta 2026
                         </p>
                     </div>
@@ -125,7 +125,7 @@ const Login = ({ onLoginSuccess }) => {
                         <button 
                             type="submit" 
                             disabled={loading}
-                            className="w-full py-6 bg-guanta-gradient text-white rounded-2xl font-black text-lg uppercase tracking-widest shadow-2xl shadow-orange-500/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 group disabled:bg-gray-400"
+                            className="w-full py-6 bg-guanta-gradient text-white rounded-2xl font-black text-lg uppercase tracking-widest shadow-2xl shadow-teal-500/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 group disabled:bg-gray-400"
                         >
                             {loading ? (
                                 <div className="h-6 w-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

@@ -4,23 +4,23 @@
 
 @layer base {
   :root {
-    --guanta-primary: #F05438;
-    --guanta-accent: #FBBF24;
+    --guanta-primary: #009FA1;
+    --guanta-accent: #00B4B8;
   }
 }
 
 @layer utilities {
   .bg-guanta-gradient {
-    background: linear-gradient(135deg, #F05438 0%, #B91C1C 100%);
+    background: linear-gradient(135deg, #009FA1 0%, #007A7C 100%);
   }
   .text-guanta-primary {
-    color: #F05438;
+    color: #009FA1;
   }
   .bg-guanta-primary {
-    background-color: #F05438;
+    background-color: #009FA1;
   }
   .border-guanta-primary {
-    border-color: #F05438;
+    border-color: #009FA1;
   }
 }
 
@@ -46,9 +46,9 @@ body {
   background: #f1f1f1;
 }
 ::-webkit-scrollbar-thumb {
-  background: #F05438;
+  background: #009FA1;
   border-radius: 10px;
 }
 ::-webkit-scrollbar-thumb:hover {
-  background: #B91C1C;
+  background: #007A7C;
 }

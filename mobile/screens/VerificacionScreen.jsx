@@ -9,10 +9,11 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
-  Animated,
+  Modal,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
+import { CameraView, useCameraPermissions } from 'expo-camera';
 import { verificarCedula, registrarMovimiento } from '../api/client';
 
 const ORANGE = '#F05438';
@@ -24,6 +25,8 @@ export default function VerificacionScreen() {
   const [isVisitor, setIsVisitor] = useState(false);
   const [loading, setLoading] = useState(false);
   const [message, setMessage] = useState(null);
+  const [showScanner, setShowScanner] = useState(false);
+  const [scanned, setScanned] = useState(false);
   const [visitorData, setVisitorData] = useState({
     nombre: '',
     ente: '',
@@ -32,6 +35,7 @@ export default function VerificacionScreen() {
     telefono: '',
   });
 
+  const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const searchTimeout = useRef(null);
 
   const handleCedulaChange = (value) => {
@@ -104,12 +108,56 @@ export default function VerificacionScreen() {
     }
   };
 
+  const handleBarCodeScanned = ({ data }) => {
+    setScanned(true);
+    setShowScanner(false);
+    const cedulaLimpia = data.trim();
+    setCedula(cedulaLimpia);
+    buscarCedula(cedulaLimpia);
+  };
+
+  const abrirScanner = async () => {
+    if (!cameraPermission?.granted) {
+      const result = await requestCameraPermission();
+      if (!result.granted) {
+        setMessage({ type: 'error', text: 'PERMISO DE CÁMARA DENEGADO' });
+        return;
+      }
+    }
+    setScanned(false);
+    setShowScanner(true);
+  };
+
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
       >
+        {/* Modal escáner QR */}
+        <Modal visible={showScanner} animationType="slide" presentationStyle="fullScreen">
+          <View style={styles.scannerContainer}>
+            <CameraView
+              style={StyleSheet.absoluteFillObject}
+              facing="back"
+              barcodeScannerSettings={{ barcodeTypes: ['qr'] }}
+              onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+            />
+            <View style={styles.scannerOverlay}>
+              <View style={styles.scannerFrame}>
+                <Ionicons name="qr-code" size={40} color="#fff" />
+              </View>
+              <Text style={styles.scannerText}>Apunte al código QR de la cédula</Text>
+            </View>
+            <TouchableOpacity
+              style={styles.scannerClose}
+              onPress={() => setShowScanner(false)}
+            >
+              <Ionicons name="close-circle" size={48} color="#fff" />
+            </TouchableOpacity>
+          </View>
+        </Modal>
+
         <ScrollView
           contentContainerStyle={styles.scroll}
           keyboardShouldPersistTaps="handled"
@@ -148,7 +196,7 @@ export default function VerificacionScreen() {
               </View>
             )}
 
-            {/* Campo de cédula */}
+            {/* Campo de cédula + QR */}
             <View style={styles.searchSection}>
               <Text style={styles.searchLabel}>IDENTIFICACIÓN DEL CIUDADANO</Text>
               <View style={styles.searchWrapper}>
@@ -163,8 +211,15 @@ export default function VerificacionScreen() {
                   maxLength={10}
                 />
                 {loading && (
-                  <ActivityIndicator color={ORANGE} style={{ marginRight: 18 }} />
+                  <ActivityIndicator color={ORANGE} style={{ marginRight: 8 }} />
                 )}
+                <TouchableOpacity
+                  style={styles.qrButton}
+                  onPress={abrirScanner}
+                  activeOpacity={0.7}
+                >
+                  <Ionicons name="qr-code" size={24} color="#fff" />
+                </TouchableOpacity>
               </View>
             </View>
 
@@ -292,7 +347,7 @@ export default function VerificacionScreen() {
                 <View style={styles.emptyIconCircle}>
                   <Ionicons name="id-card" size={56} color="#d1d5db" />
                 </View>
-                <Text style={styles.emptyText}>Ingrese una cédula para comenzar la verificación</Text>
+                <Text style={styles.emptyText}>Ingrese una cédula o escanee el código QR</Text>
               </View>
             )}
           </View>
@@ -302,7 +357,6 @@ export default function VerificacionScreen() {
   );
 }
 
-// Componente auxiliar para campos del visitante
 function VisitorField({ label, placeholder, value, onChangeText, keyboardType }) {
   return (
     <View style={vfStyles.group}>
@@ -433,6 +487,17 @@ const styles = StyleSheet.create({
     color: '#111',
     letterSpacing: -1.5,
   },
+  qrButton: {
+    backgroundColor: ORANGE,
+    borderRadius: 16,
+    padding: 14,
+    marginRight: 8,
+    shadowColor: ORANGE,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 6,
+  },
   // Personal card
   personalCard: {
     backgroundColor: '#fff',
@@ -558,4 +623,46 @@ const styles = StyleSheet.create({
     borderColor: '#f3f4f6',
   },
   emptyText: { color: '#9ca3af', fontSize: 15, fontWeight: '700', textAlign: 'center', maxWidth: '80%' },
+  // Scanner modal
+  scannerContainer: {
+    flex: 1,
+    backgroundColor: '#000',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  scannerOverlay: {
+    position: 'absolute',
+    top: 0,
+    left: 0,
+    right: 0,
+    bottom: 0,
+    justifyContent: 'center',
+    alignItems: 'center',
+    gap: 24,
+  },
+  scannerFrame: {
+    width: 220,
+    height: 220,
+    borderWidth: 3,
+    borderColor: ORANGE,
+    borderRadius: 32,
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor: 'rgba(240,84,56,0.15)',
+  },
+  scannerText: {
+    color: '#fff',
+    fontSize: 14,
+    fontWeight: '900',
+    textTransform: 'uppercase',
+    letterSpacing: 1,
+    textAlign: 'center',
+    paddingHorizontal: 40,
+  },
+  scannerClose: {
+    position: 'absolute',
+    bottom: 80,
+    alignSelf: 'center',
+    opacity: 0.8,
+  },
 });
