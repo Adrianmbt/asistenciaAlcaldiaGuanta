@@ -1,9 +1,9 @@
 import React from 'react';
-import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import { SafeAreaProvider, useSafeAreaInsets } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 
@@ -17,20 +17,21 @@ import UsuariosScreen from './screens/UsuariosScreen';
 const Stack = createNativeStackNavigator();
 const Tab = createBottomTabNavigator();
 
-const ORANGE = '#F05438';
-const ORANGE_LIGHT = '#FFF7ED';
+  
+const ORANGE = '#009fa1';
+const ORANGE_LIGHT = 'rgba(0,159,161,0.08)';
 
-// ─── Tabs principales (usuario autenticado) ───────────────────────────────────
 function MainTabs() {
   const { user, logout } = useAuth();
-
-  // Solo admins y devs ven las pestañas de gestión
   const isAdmin = user?.rol === 'admin' || user?.rol === 'dev';
+  const insets = useSafeAreaInsets();
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 600;
 
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
-        headerStyle: { backgroundColor: '#fff' },
+        headerStyle: { backgroundColor: 'rgba(255,247,237,0.7)' },
         headerTitleStyle: { 
           fontWeight: '900', 
           color: '#111', 
@@ -39,12 +40,12 @@ function MainTabs() {
         },
         headerShadowVisible: false,
         tabBarStyle: {
-          backgroundColor: '#fff',
-          borderTopColor: '#f3f4f6',
+          backgroundColor: 'rgba(255,255,255,0.95)',
+          borderTopColor: 'rgba(255,255,255,0.6)',
           borderTopWidth: 1,
-          paddingBottom: 8,
+          paddingBottom: Math.max(insets.bottom, 8),
           paddingTop: 8,
-          height: 65,
+          height: 65 + Math.max(insets.bottom, 8),
           elevation: 10,
           shadowColor: '#000',
           shadowOffset: { width: 0, height: -4 },
@@ -54,7 +55,7 @@ function MainTabs() {
         tabBarActiveTintColor: ORANGE,
         tabBarInactiveTintColor: '#9ca3af',
         tabBarLabelStyle: { 
-          fontSize: 10, 
+          fontSize: isTablet ? 12 : 10, 
           fontWeight: '900', 
           letterSpacing: 0.5,
           textTransform: 'uppercase',
@@ -161,7 +162,6 @@ function MainTabs() {
   );
 }
 
-// ─── Navegador raíz ───────────────────────────────────────────────────────────
 function RootNavigator() {
   const { user, loading } = useAuth();
 
@@ -186,7 +186,6 @@ function RootNavigator() {
   );
 }
 
-// ─── App raíz ─────────────────────────────────────────────────────────────────
 export default function App() {
   return (
     <SafeAreaProvider>
@@ -207,7 +206,7 @@ const headerStyles = StyleSheet.create({
     padding: 8,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#fed7aa',
+    borderColor: 'rgba(0,159,161,0.15)',
   },
   title: { fontSize: 18, fontWeight: '900', color: '#111', letterSpacing: -0.5 },
   userBadge: {
@@ -217,23 +216,23 @@ const headerStyles = StyleSheet.create({
     borderRadius: 12,
     marginRight: 16,
     borderWidth: 1,
-    borderColor: '#fed7aa',
+    borderColor: 'rgba(0,159,161,0.15)',
   },
   userText: { fontSize: 11, fontWeight: '900', color: ORANGE, textTransform: 'uppercase' },
   logoutBtnContainer: {
-    backgroundColor: '#fff1f2',
+    backgroundColor: 'rgba(244,63,94,0.08)',
     padding: 10,
     borderRadius: 12,
     marginRight: 16,
     borderWidth: 1,
-    borderColor: '#fecdd3',
+    borderColor: 'rgba(244,63,94,0.15)',
   },
 });
 
 const styles = StyleSheet.create({
   splash: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#FFF7ED',
     alignItems: 'center',
     justifyContent: 'center',
     gap: 8,

@@ -12,6 +12,7 @@ import {
   ScrollView,
   KeyboardAvoidingView,
   Platform,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
@@ -19,7 +20,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { getUsuarios, crearUsuario, actualizarUsuario, eliminarUsuario } from '../api/client';
 import { useAuth } from '../context/AuthContext';
 
-const ORANGE = '#F05438';
+const ORANGE = '#009fa1';
 const ORANGE_LIGHT = '#FFF7ED';
 
 const EMPTY_FORM = {
@@ -40,6 +41,9 @@ export default function UsuariosScreen() {
   const [form, setForm] = useState(EMPTY_FORM);
   const [saving, setSaving] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 600;
+  const contentMaxWidth = isTablet ? 600 : undefined;
 
   const fetchData = async () => {
     setLoading(true);
@@ -192,8 +196,8 @@ export default function UsuariosScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
       {/* Toolbar Premium */}
-      <View style={styles.toolbar}>
-        <View style={styles.searchWrapper}>
+      <View style={[styles.toolbar, isTablet && { alignItems: 'center' }]}>
+        <View style={[styles.searchWrapper, isTablet && { maxWidth: contentMaxWidth, width: '100%' }]}>
           <Ionicons name="search" size={20} color={ORANGE} style={{ marginRight: 10 }} />
           <TextInput
             style={styles.searchInput}
@@ -203,7 +207,7 @@ export default function UsuariosScreen() {
             onChangeText={setFilter}
           />
         </View>
-        <View style={styles.toolbarRow}>
+        <View style={[styles.toolbarRow, isTablet && { maxWidth: contentMaxWidth, width: '100%' }]}>
            <View style={styles.countBadge}>
              <Text style={styles.countText}>{usuarios.length}</Text>
           </View>
@@ -226,7 +230,7 @@ export default function UsuariosScreen() {
           data={filteredUsuarios}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderItem}
-          contentContainerStyle={styles.list}
+          contentContainerStyle={[styles.list, isTablet && { maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }]}
           ListEmptyComponent={
             <View style={styles.emptyState}>
               <View style={styles.emptyIconCircle}>
@@ -355,12 +359,12 @@ export default function UsuariosScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#FFFBF9' },
+  safe: { flex: 1, backgroundColor: '#FFF7ED' },
   toolbar: { 
-    backgroundColor: '#fff', 
+    backgroundColor: 'rgba(255,255,255,0.7)', 
     padding: 20, 
     borderBottomWidth: 1, 
-    borderBottomColor: '#f3f4f6', 
+    borderBottomColor: 'rgba(255,255,255,0.4)', 
     gap: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -371,11 +375,11 @@ const styles = StyleSheet.create({
   searchWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     borderRadius: 18,
     paddingHorizontal: 16,
     borderWidth: 2,
-    borderColor: '#fed7aa',
+    borderColor: 'rgba(255,255,255,0.6)',
   },
   searchInput: { flex: 1, paddingVertical: 14, fontSize: 15, fontWeight: '700', color: '#111' },
   toolbarRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
@@ -410,7 +414,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.65)',
     borderRadius: 24,
     padding: 16,
     gap: 16,
@@ -420,12 +424,12 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
     elevation: 3,
     borderWidth: 1,
-    borderColor: '#fff1ec',
+    borderColor: 'rgba(255,255,255,0.6)',
   },
   rowInactive: { opacity: 0.5 },
   avatar: { width: 54, height: 54, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
-  avatarOrange: { backgroundColor: '#fff7ed' },
-  avatarBlue: { backgroundColor: '#eff6ff' },
+  avatarOrange: { backgroundColor: 'rgba(0,159,161,0.08)' },
+  avatarBlue: { backgroundColor: 'rgba(59,130,246,0.08)' },
   rowInfo: { flex: 1 },
   rowUsername: { fontSize: 13, fontWeight: '900', color: ORANGE, letterSpacing: 0.5 },
   rowName: { fontSize: 16, fontWeight: '900', color: '#111', marginTop: 2, letterSpacing: -0.5 },
@@ -448,15 +452,15 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#f3f4f6',
+    borderColor: 'rgba(255,255,255,0.6)',
   },
   emptyText: { color: '#9ca3af', fontSize: 16, fontWeight: '700' },
   // Modal
-  modalSafe: { flex: 1, backgroundColor: '#fff' },
+  modalSafe: { flex: 1, backgroundColor: 'rgba(255,255,255,0.9)' },
   modalScroll: { padding: 24, paddingBottom: 40 },
   modalHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 32 },
   modalIconBox: {
@@ -476,9 +480,9 @@ const styles = StyleSheet.create({
   formGrid: { flexDirection: 'row', gap: 16, marginBottom: 20 },
   fieldLabel: { fontSize: 9, fontWeight: '900', color: '#9ca3af', letterSpacing: 1.5, marginBottom: 10, marginLeft: 4, textTransform: 'uppercase' },
   fieldInput: {
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     borderWidth: 2,
-    borderColor: '#f3f4f6',
+    borderColor: 'rgba(255,255,255,0.6)',
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -489,11 +493,11 @@ const styles = StyleSheet.create({
   passwordWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     borderRadius: 16,
     paddingHorizontal: 6,
     borderWidth: 2,
-    borderColor: '#f3f4f6',
+    borderColor: 'rgba(255,255,255,0.6)',
   },
   segmentRow: { flexDirection: 'row', backgroundColor: '#f3f4f6', borderRadius: 16, padding: 6, gap: 6, marginBottom: 24 },
   segmentBtn: { flex: 1, paddingVertical: 12, borderRadius: 12, alignItems: 'center' },

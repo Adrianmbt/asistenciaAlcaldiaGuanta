@@ -10,8 +10,8 @@ export default {
     extend: {
       colors: {
         guanta: {
-          primary: '#009FA1',   // Cyan/Teal Institucional
-          accent: '#00B4B8',    // Cyan claro
+          primary: '#009FA1',   // Teal Institucional
+          accent: '#00B4B8',    // Teal claro
           pink: '#007A7C',      // Teal oscuro
           dark: '#1A1A1A',
           light: '#FFFFFF',

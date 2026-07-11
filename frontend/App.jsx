@@ -13,12 +13,10 @@ function App() {
   const [registros, setRegistros] = useState([]);
   const [errorHeader, setErrorHeader] = useState(null);
 
-  // Estados para Modal de Edición
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentEdit, setCurrentEdit] = useState(null);
 
   useEffect(() => {
-    // Verificar si hay un token válido al cargar
     const token = localStorage.getItem('token');
     const user = localStorage.getItem('user');
     if (token && user) {
@@ -142,12 +140,11 @@ function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#FFFBF9] flex flex-col md:flex-row font-sans animate-in fade-in duration-700">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50/80 via-white to-orange-100/40 flex flex-col md:flex-row font-sans animate-in fade-in duration-700 backdrop-blur-sm">
 
-      {/* Sidebar Institucional Premium */}
-      <aside className="w-full md:w-[320px] bg-white border-r border-cyan-100/50 p-10 flex flex-col gap-12 relative">
+      <aside className="w-full md:w-[320px] backdrop-blur-xl bg-white/50 border-r border-white/40 p-10 flex flex-col gap-12 relative">
         <div className="flex flex-col items-center gap-6">
-          <div className="relative group p-1 bg-white rounded-full shadow-lg border border-cyan-50">
+          <div className="relative group p-1 bg-white/60 backdrop-blur-sm rounded-full shadow-lg border border-white/60">
             <div className="absolute inset-0 bg-guanta-primary blur-3xl opacity-5 group-hover:opacity-10 transition-opacity"></div>
             <img src="/img/logo_guanta.png" alt="Logo Guanta" className="w-24 h-24 relative z-10 transition-transform group-hover:scale-110 duration-500 rounded-full object-cover" />
           </div>
@@ -161,19 +158,19 @@ function App() {
           <div className="text-[10px] font-black text-gray-300 uppercase tracking-widest ml-4 mb-2">Operaciones</div>
           <button
             onClick={() => setActiveTab('verificacion')}
-            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'verificacion' ? 'bg-cyan-50 text-guanta-primary shadow-inner shadow-teal-500/5' : 'text-gray-400 hover:bg-cyan-50/50 hover:text-gray-600'}`}
+            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all backdrop-blur-sm ${activeTab === 'verificacion' ? 'bg-guanta-primary/10 text-guanta-primary shadow-inner shadow-guanta-primary/5 border border-guanta-primary/20' : 'text-gray-400 hover:bg-white/40 hover:text-gray-600 border border-transparent'}`}
           >
             <UserCheck size={20} /> Verificación
           </button>
           <button
             onClick={() => { setActiveTab('personal'); }}
-            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'personal' ? 'bg-cyan-50 text-guanta-primary shadow-inner shadow-teal-500/5' : 'text-gray-400 hover:bg-cyan-50/50 hover:text-gray-600'}`}
+            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all backdrop-blur-sm ${activeTab === 'personal' ? 'bg-guanta-primary/10 text-guanta-primary shadow-inner shadow-guanta-primary/5 border border-guanta-primary/20' : 'text-gray-400 hover:bg-white/40 hover:text-gray-600 border border-transparent'}`}
           >
             <Users size={20} /> Personal
           </button>
           <button
             onClick={() => { setActiveTab('tabla'); fetchHoy(); }}
-            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'tabla' ? 'bg-cyan-50 text-guanta-primary shadow-inner shadow-teal-500/5' : 'text-gray-400 hover:bg-cyan-50/50 hover:text-gray-600'}`}
+            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all backdrop-blur-sm ${activeTab === 'tabla' ? 'bg-guanta-primary/10 text-guanta-primary shadow-inner shadow-guanta-primary/5 border border-guanta-primary/20' : 'text-gray-400 hover:bg-white/40 hover:text-gray-600 border border-transparent'}`}
           >
             <LayoutDashboard size={20} /> Movimientos
           </button>
@@ -181,20 +178,20 @@ function App() {
           <div className="text-[10px] font-black text-gray-300 uppercase tracking-widest ml-4 mt-6 mb-2">Administración</div>
           <button
             onClick={() => setActiveTab('usuarios')}
-            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all ${activeTab === 'usuarios' ? 'bg-cyan-50 text-guanta-primary shadow-inner shadow-teal-500/5' : 'text-gray-400 hover:bg-cyan-50/50 hover:text-gray-600'}`}
+            className={`flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest transition-all backdrop-blur-sm ${activeTab === 'usuarios' ? 'bg-guanta-primary/10 text-guanta-primary shadow-inner shadow-guanta-primary/5 border border-guanta-primary/20' : 'text-gray-400 hover:bg-white/40 hover:text-gray-600 border border-transparent'}`}
           >
             <ShieldCheck size={20} /> Seguridad
           </button>
-          <button className="flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest text-gray-400 hover:bg-cyan-50/50 transition-all">
+          <button className="flex items-center gap-4 px-6 py-5 rounded-[1.5rem] font-black text-xs uppercase tracking-widest text-gray-400 hover:bg-white/40 transition-all border border-transparent">
             <Settings size={20} /> Perfil
           </button>
         </nav>
 
-        <div className="mt-auto pt-10 border-t border-cyan-50">
-          <div className="bg-gradient-to-br from-cyan-50 to-white p-6 rounded-[2rem] border border-cyan-100 shadow-sm relative overflow-hidden group">
+        <div className="mt-auto pt-10 border-t border-white/40">
+          <div className="bg-gradient-to-br from-white/60 to-guanta-primary/5 p-6 rounded-[2rem] border border-white/40 shadow-sm relative overflow-hidden group backdrop-blur-xl">
             <div className="absolute -top-10 -right-10 w-24 h-24 bg-guanta-primary/5 rounded-full blur-2xl group-hover:bg-guanta-primary/10 transition-all"></div>
             <div className="flex items-center gap-4 mb-4 relative z-10">
-              <div className="w-12 h-12 bg-white rounded-2xl flex items-center justify-center shadow-lg shadow-teal-500/10 border border-cyan-50">
+              <div className="w-12 h-12 bg-white/60 backdrop-blur-sm rounded-2xl flex items-center justify-center shadow-lg shadow-guanta-primary/10 border border-white/60">
                 <User size={24} className="text-guanta-primary" />
               </div>
               <div className="flex-1 overflow-hidden">
@@ -211,7 +208,7 @@ function App() {
             </div>
             <button
               onClick={handleLogout}
-              className="w-full flex items-center justify-center gap-3 py-4 bg-white text-[10px] font-black text-rose-500 uppercase tracking-widest hover:bg-rose-50 rounded-2xl transition-all border border-rose-50 shadow-sm relative z-10"
+              className="w-full flex items-center justify-center gap-3 py-4 bg-white/60 backdrop-blur-sm text-[10px] font-black text-rose-500 uppercase tracking-widest hover:bg-rose-50/80 rounded-2xl transition-all border border-rose-50/60 shadow-sm relative z-10"
             >
               <LogOutIcon size={14} /> Salir del Sistema
             </button>
@@ -219,16 +216,15 @@ function App() {
         </div>
       </aside>
 
-      {/* Área de Contenido Principal Premium */}
-      <main className="flex-1 p-6 md:p-16 overflow-y-auto max-h-screen bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] bg-fixed">
+      <main className="flex-1 p-6 md:p-16 overflow-y-auto max-h-screen backdrop-blur-sm">
         <div className="max-w-6xl mx-auto h-full relative">
 
           {errorHeader && (
-            <div className="mb-8 p-5 bg-rose-50 border border-rose-100 rounded-[2rem] text-rose-600 text-[10px] font-black uppercase tracking-widest flex items-center justify-between shadow-xl shadow-rose-500/5 animate-in slide-in-from-top-4 duration-500">
+            <div className="mb-8 p-5 backdrop-blur-xl bg-rose-50/80 border border-rose-100/60 rounded-[2rem] text-rose-600 text-[10px] font-black uppercase tracking-widest flex items-center justify-between shadow-xl shadow-rose-500/5 animate-in slide-in-from-top-4 duration-500">
               <div className="flex items-center gap-3">
                 <X size={18} /> {errorHeader}
               </div>
-              <button onClick={() => setErrorHeader(null)} className="hover:bg-rose-100 p-1 rounded-lg transition-colors"><X size={14} /></button>
+              <button onClick={() => setErrorHeader(null)} className="hover:bg-rose-100/80 p-1 rounded-lg transition-colors"><X size={14} /></button>
             </div>
           )}
 
@@ -249,28 +245,28 @@ function App() {
               <div className="mb-12 flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
                 <div>
                   <h2 className="text-6xl font-black text-gray-900 tracking-tighter leading-none mb-3">Sistema de Control de Acceso</h2>
-                  <p className="text-guanta-primary font-black uppercase text-xs tracking-[0.4em] ml-1 bg-cyan-100/50 px-4 py-1.5 rounded-full inline-block">Control de Acceso del Edificio Administrativo</p>
+                  <p className="text-guanta-primary font-black uppercase text-xs tracking-[0.4em] ml-1 bg-guanta-primary/10 backdrop-blur-sm px-4 py-1.5 rounded-full inline-block border border-guanta-primary/20">Control de Acceso del Edificio Administrativo</p>
                 </div>
 
-                <div className="bg-white p-2 rounded-[2rem] border border-cyan-100 shadow-2xl shadow-teal-500/5 flex items-center gap-2">
-                  <div className="bg-cyan-50 px-6 py-4 rounded-[1.5rem] flex items-center gap-5">
+                <div className="backdrop-blur-xl bg-white/60 p-2 rounded-[2rem] border border-white/40 shadow-2xl shadow-guanta-primary/5 flex items-center gap-2">
+                  <div className="bg-guanta-primary/10 backdrop-blur-sm px-6 py-4 rounded-[1.5rem] flex items-center gap-5">
                     <div className="text-center">
                       <div className="text-[9px] font-black text-guanta-primary uppercase tracking-widest mb-1 underline decoration-2 underline-offset-4">HOY</div>
                       <div className="text-3xl font-black text-gray-900 leading-none">{registros.length}</div>
                     </div>
-                    <div className="w-[1px] h-10 bg-cyan-200/50"></div>
+                    <div className="w-[1px] h-10 bg-guanta-primary/20"></div>
                     <div className="text-left">
                       <div className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Registros</div>
                       <div className="text-[10px] font-bold text-gray-500">PROCESADOS</div>
                     </div>
                   </div>
-                  <button onClick={fetchHoy} className="p-5 hover:bg-cyan-50 rounded-[1.5rem] text-guanta-primary transition-all group active:scale-90">
+                  <button onClick={fetchHoy} className="p-5 hover:bg-guanta-primary/10 rounded-[1.5rem] text-guanta-primary transition-all group active:scale-90 backdrop-blur-sm">
                     <LayoutDashboard size={24} className="group-hover:rotate-12 transition-transform" />
                   </button>
                 </div>
               </div>
 
-              <div className="shadow-2xl shadow-teal-500/10 rounded-[2rem] overflow-hidden">
+              <div className="shadow-2xl shadow-guanta-primary/10 rounded-[2rem] overflow-hidden">
                 <AsistenciaTable
                   registros={registros}
                   onMarcarSalida={handleMarcarSalida}
@@ -283,13 +279,12 @@ function App() {
         </div>
       </main>
 
-      {/* MODAL DE EDICIÓN PREMIUM */}
       {isEditModalOpen && currentEdit && (
-        <div className="fixed inset-0 z-[100] bg-black/70 backdrop-blur-md flex items-center justify-center p-6">
-          <div className="bg-white w-full max-w-lg rounded-[3rem] p-12 shadow-2xl animate-in zoom-in-95 duration-300 border border-cyan-100">
+        <div className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-md flex items-center justify-center p-6">
+          <div className="backdrop-blur-xl bg-white/60 w-full max-w-lg rounded-[3rem] p-12 shadow-2xl animate-in zoom-in-95 duration-300 border border-white/40">
             <div className="flex justify-between items-center mb-10">
               <div className="flex items-center gap-4">
-                <div className="p-4 bg-cyan-100 rounded-3xl text-guanta-primary shadow-lg shadow-teal-500/20">
+                <div className="p-4 bg-guanta-primary/10 backdrop-blur-sm rounded-3xl text-guanta-primary shadow-lg shadow-guanta-primary/20 border border-guanta-primary/20">
                   <Save size={24} />
                 </div>
                 <div>
@@ -297,7 +292,7 @@ function App() {
                   <p className="text-[10px] font-black text-guanta-primary uppercase tracking-widest">Gestión Manual de Movimiento</p>
                 </div>
               </div>
-              <button onClick={() => setIsEditModalOpen(false)} className="p-3 bg-gray-50 text-gray-400 hover:text-gray-900 rounded-full transition-all">
+              <button onClick={() => setIsEditModalOpen(false)} className="p-3 bg-white/40 backdrop-blur-sm text-gray-400 hover:text-gray-900 rounded-full transition-all border border-white/60">
                 <X size={20} />
               </button>
             </div>
@@ -309,7 +304,7 @@ function App() {
                   type="text"
                   value={currentEdit.nombre}
                   onChange={(e) => setCurrentEdit({ ...currentEdit, nombre: e.target.value })}
-                  className="w-full p-5 bg-gray-50 border-2 border-transparent focus:border-guanta-primary focus:bg-white rounded-2xl outline-none font-bold text-gray-800 transition-all shadow-inner"
+                  className="w-full p-5 bg-white/40 border-2 border-white/60 focus:border-guanta-primary focus:bg-white/60 rounded-2xl outline-none font-bold text-gray-800 transition-all shadow-inner backdrop-blur-sm"
                 />
               </div>
 
@@ -320,12 +315,12 @@ function App() {
                     type="text"
                     value={currentEdit.piso}
                     onChange={(e) => setCurrentEdit({ ...currentEdit, piso: e.target.value })}
-                    className="w-full p-5 bg-gray-50 border-2 border-transparent focus:border-guanta-primary focus:bg-white rounded-2xl outline-none font-bold text-gray-800 transition-all shadow-inner"
+                    className="w-full p-5 bg-white/40 border-2 border-white/60 focus:border-guanta-primary focus:bg-white/60 rounded-2xl outline-none font-bold text-gray-800 transition-all shadow-inner backdrop-blur-sm"
                   />
                 </div>
                 <div className="space-y-3 group">
                   <label className="text-[11px] font-black text-gray-400 uppercase ml-3 tracking-[0.2em]">Identificación</label>
-                  <div className="w-full p-5 bg-gray-100 rounded-2xl font-black text-gray-400 border border-gray-200">
+                  <div className="w-full p-5 bg-white/40 backdrop-blur-sm rounded-2xl font-black text-gray-400 border border-white/60">
                     V-{currentEdit.cedula_identidad}
                   </div>
                 </div>
@@ -337,13 +332,13 @@ function App() {
                   rows="3"
                   value={currentEdit.motivo}
                   onChange={(e) => setCurrentEdit({ ...currentEdit, motivo: e.target.value })}
-                  className="w-full p-5 bg-gray-50 border-2 border-transparent focus:border-guanta-primary focus:bg-white rounded-2xl outline-none font-bold text-gray-800 resize-none transition-all shadow-inner"
+                  className="w-full p-5 bg-white/40 border-2 border-white/60 focus:border-guanta-primary focus:bg-white/60 rounded-2xl outline-none font-bold text-gray-800 resize-none transition-all shadow-inner backdrop-blur-sm"
                 />
               </div>
 
               <button
                 onClick={handleSaveEdit}
-                className="w-full py-6 bg-guanta-gradient text-white rounded-[2rem] font-black text-lg uppercase tracking-widest shadow-2xl shadow-teal-600/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 mt-4"
+                className="w-full py-6 bg-guanta-gradient text-white rounded-[2rem] font-black text-lg uppercase tracking-widest shadow-2xl shadow-guanta-primary/30 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 mt-4"
               >
                 <Save size={22} /> Guardar Movimiento
               </button>

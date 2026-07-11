@@ -8,7 +8,6 @@ const GestionUsuarios = () => {
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState("");
     
-    // Estados para Modal
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
     const [currentUser, setCurrentUser] = useState({
@@ -51,7 +50,7 @@ const GestionUsuarios = () => {
     };
 
     const handleOpenEdit = (user) => {
-        setCurrentUser({ ...user, password: '' }); // No cargar el hash
+        setCurrentUser({ ...user, password: '' });
         setIsEditing(true);
         setIsModalOpen(true);
     };
@@ -98,7 +97,6 @@ const GestionUsuarios = () => {
 
     return (
         <div className="w-full max-w-6xl mx-auto animate-in fade-in duration-500">
-            {/* Cabecera de Sección */}
             <div className="mb-10 flex flex-col md:flex-row justify-between items-start md:items-end gap-6">
                 <div>
                     <h2 className="text-5xl font-black text-gray-900 tracking-tighter leading-none mb-2">Seguridad</h2>
@@ -107,19 +105,18 @@ const GestionUsuarios = () => {
                 
                 <button 
                     onClick={handleOpenCreate}
-                    className="flex items-center gap-3 px-8 py-4 bg-guanta-gradient text-white rounded-[1.5rem] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-teal-500/20"
+                    className="flex items-center gap-3 px-8 py-4 bg-guanta-gradient text-white rounded-[1.5rem] font-black uppercase tracking-widest hover:scale-105 transition-all shadow-xl shadow-guanta-primary/20"
                 >
                     <UserPlus size={20} /> Nuevo Usuario
                 </button>
             </div>
 
-            {/* Filtros y Buscador */}
-            <div className="bg-white p-6 rounded-[2rem] shadow-sm border border-cyan-50 mb-8 flex items-center gap-4">
+            <div className="backdrop-blur-xl bg-white/60 p-6 rounded-[2rem] shadow-lg border border-white/40 mb-8 flex items-center gap-4">
                 <div className="relative flex-1 group">
                     <input
                         type="text"
                         placeholder="Buscar por nombre, usuario o email..."
-                        className="w-full pl-12 pr-4 py-3 bg-gray-50 border-2 border-transparent focus:border-guanta-primary focus:bg-white rounded-2xl outline-none transition-all font-bold text-gray-700"
+                        className="w-full pl-12 pr-4 py-3 bg-white/40 border-2 border-white/60 focus:border-guanta-primary focus:bg-white/80 rounded-2xl outline-none transition-all font-bold text-gray-700 backdrop-blur-sm"
                         value={filter}
                         onChange={(e) => setFilter(e.target.value)}
                     />
@@ -130,11 +127,10 @@ const GestionUsuarios = () => {
                 </div>
             </div>
 
-            {/* Listado de Usuarios */}
-            <div className="bg-white rounded-[2rem] shadow-2xl shadow-teal-500/5 border border-cyan-50 overflow-hidden">
+            <div className="backdrop-blur-xl bg-white/60 rounded-[2rem] shadow-2xl shadow-guanta-primary/5 border border-white/40 overflow-hidden">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-gray-50/50 text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-cyan-50">
+                        <tr className="bg-white/40 text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-white/40">
                             <th className="px-8 py-5">Usuario / Nombre</th>
                             <th className="px-8 py-5">Email Corporativo</th>
                             <th className="px-8 py-5">Rol / Permisos</th>
@@ -142,12 +138,12 @@ const GestionUsuarios = () => {
                             <th className="px-8 py-5 text-right">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-cyan-50/30">
+                    <tbody className="divide-y divide-white/30">
                         {filteredUsers.map((user) => (
-                            <tr key={user.id} className={`group hover:bg-cyan-50/20 transition-all ${user.activo === 0 ? 'opacity-50' : ''}`}>
+                            <tr key={user.id} className={`group hover:bg-white/40 transition-all backdrop-blur-sm ${user.activo === 0 ? 'opacity-50' : ''}`}>
                                 <td className="px-8 py-6">
                                     <div className="flex items-center gap-4">
-                                        <div className={`p-3 rounded-2xl ${user.rol === 'admin' ? 'bg-cyan-100 text-guanta-primary' : 'bg-blue-100 text-blue-600'}`}>
+                                        <div className={`p-3 rounded-2xl backdrop-blur-sm ${user.rol === 'admin' ? 'bg-guanta-primary/10 text-guanta-primary' : 'bg-blue-100/80 text-blue-600'}`}>
                                             <User size={20} />
                                         </div>
                                         <div>
@@ -163,7 +159,7 @@ const GestionUsuarios = () => {
                                     </div>
                                 </td>
                                 <td className="px-8 py-6">
-                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase ${user.rol === 'admin' ? 'bg-cyan-100 text-guanta-primary' : 'bg-blue-100 text-blue-600'}`}>
+                                    <span className={`px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase backdrop-blur-sm ${user.rol === 'admin' ? 'bg-guanta-primary/10 text-guanta-primary' : 'bg-blue-100/80 text-blue-600'}`}>
                                         {user.rol}
                                     </span>
                                 </td>
@@ -184,14 +180,14 @@ const GestionUsuarios = () => {
                                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-all">
                                         <button 
                                             onClick={() => handleOpenEdit(user)}
-                                            className="p-3 bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm"
+                                            className="p-3 bg-guanta-primary/10 backdrop-blur-sm text-guanta-primary rounded-xl hover:bg-guanta-primary hover:text-white transition-all shadow-sm"
                                         >
                                             <Edit2 size={16} />
                                         </button>
                                         {user.activo === 1 && (
                                             <button 
                                                 onClick={() => handleDelete(user.id)}
-                                                className="p-3 bg-rose-50 text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all shadow-sm"
+                                                className="p-3 bg-rose-50/80 backdrop-blur-sm text-rose-500 rounded-xl hover:bg-rose-500 hover:text-white transition-all shadow-sm"
                                             >
                                                 <Trash2 size={16} />
                                             </button>
@@ -204,13 +200,12 @@ const GestionUsuarios = () => {
                 </table>
             </div>
 
-            {/* Modal CRUD Usuarios */}
             {isModalOpen && (
-                <div className="fixed inset-0 z-[100] bg-black/60 backdrop-blur-sm flex items-center justify-center p-4">
-                    <div className="bg-white w-full max-w-lg rounded-[2.5rem] p-10 shadow-2xl animate-in zoom-in-95 duration-200 border border-cyan-100">
+                <div className="fixed inset-0 z-[100] bg-black/40 backdrop-blur-md flex items-center justify-center p-4">
+                    <div className="backdrop-blur-xl bg-white/60 w-full max-w-lg rounded-[2.5rem] p-10 shadow-2xl animate-in zoom-in-95 duration-200 border border-white/40">
                         <div className="flex justify-between items-center mb-10">
                             <div className="flex items-center gap-4">
-                                <div className="p-3 bg-cyan-100 rounded-2xl text-guanta-primary shadow-lg shadow-teal-500/20">
+                                <div className="p-3 bg-guanta-primary/10 backdrop-blur-sm rounded-2xl text-guanta-primary shadow-lg shadow-guanta-primary/20 border border-guanta-primary/20">
                                     <UserPlus size={24} />
                                 </div>
                                 <div>
@@ -218,7 +213,7 @@ const GestionUsuarios = () => {
                                     <p className="text-[10px] font-black text-guanta-primary uppercase tracking-widest mt-1">Configuración de Credenciales de Sistema</p>
                                 </div>
                             </div>
-                            <button onClick={() => setIsModalOpen(false)} className="p-3 bg-gray-50 text-gray-400 hover:text-gray-900 rounded-full transition-all">
+                            <button onClick={() => setIsModalOpen(false)} className="p-3 bg-white/40 backdrop-blur-sm text-gray-400 hover:text-gray-900 rounded-full transition-all border border-white/60">
                                 <X size={20} />
                             </button>
                         </div>
@@ -232,7 +227,7 @@ const GestionUsuarios = () => {
                                         required
                                         value={currentUser.username}
                                         onChange={(e) => setCurrentUser({...currentUser, username: e.target.value})}
-                                        className="w-full p-4 bg-gray-50 border-2 border-transparent focus:border-guanta-primary focus:bg-white rounded-2xl outline-none font-bold text-gray-800 transition-all"
+                                        className="w-full p-4 bg-white/40 border-2 border-white/60 focus:border-guanta-primary focus:bg-white/60 rounded-2xl outline-none font-bold text-gray-800 transition-all backdrop-blur-sm"
                                         placeholder="ej: j.perez"
                                     />
                                 </div>
@@ -244,7 +239,7 @@ const GestionUsuarios = () => {
                                             required={!isEditing}
                                             value={currentUser.password}
                                             onChange={(e) => setCurrentUser({...currentUser, password: e.target.value})}
-                                            className="w-full p-4 bg-gray-50 border-2 border-transparent focus:border-guanta-primary focus:bg-white rounded-2xl outline-none font-bold text-gray-800 transition-all"
+                                            className="w-full p-4 bg-white/40 border-2 border-white/60 focus:border-guanta-primary focus:bg-white/60 rounded-2xl outline-none font-bold text-gray-800 transition-all backdrop-blur-sm"
                                             placeholder={isEditing ? "(Sin cambios)" : "*******"}
                                         />
                                         <Key className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
@@ -259,7 +254,7 @@ const GestionUsuarios = () => {
                                     required
                                     value={currentUser.nombre_completo}
                                     onChange={(e) => setCurrentUser({...currentUser, nombre_completo: e.target.value})}
-                                    className="w-full p-4 bg-gray-50 border-2 border-transparent focus:border-guanta-primary focus:bg-white rounded-2xl outline-none font-bold text-gray-800 transition-all"
+                                    className="w-full p-4 bg-white/40 border-2 border-white/60 focus:border-guanta-primary focus:bg-white/60 rounded-2xl outline-none font-bold text-gray-800 transition-all backdrop-blur-sm"
                                 />
                             </div>
 
@@ -269,7 +264,7 @@ const GestionUsuarios = () => {
                                     type="email" 
                                     value={currentUser.email}
                                     onChange={(e) => setCurrentUser({...currentUser, email: e.target.value})}
-                                    className="w-full p-4 bg-gray-50 border-2 border-transparent focus:border-guanta-primary focus:bg-white rounded-2xl outline-none font-bold text-gray-800 transition-all"
+                                    className="w-full p-4 bg-white/40 border-2 border-white/60 focus:border-guanta-primary focus:bg-white/60 rounded-2xl outline-none font-bold text-gray-800 transition-all backdrop-blur-sm"
                                     placeholder="ejemplo@guanta.gob.ve"
                                 />
                             </div>
@@ -279,7 +274,7 @@ const GestionUsuarios = () => {
                                 <select 
                                     value={currentUser.rol}
                                     onChange={(e) => setCurrentUser({...currentUser, rol: e.target.value})}
-                                    className="w-full p-4 bg-gray-50 border-2 border-transparent focus:border-guanta-primary focus:bg-white rounded-2xl outline-none font-bold text-gray-800 transition-all appearance-none cursor-pointer"
+                                    className="w-full p-4 bg-white/40 border-2 border-white/60 focus:border-guanta-primary focus:bg-white/60 rounded-2xl outline-none font-bold text-gray-800 transition-all appearance-none cursor-pointer backdrop-blur-sm"
                                 >
                                     <option value="portero">Oficial de Seguridad (Portero)</option>
                                     <option value="admin">Administrador del Sistema</option>
@@ -289,7 +284,7 @@ const GestionUsuarios = () => {
                             <button 
                                 type="submit"
                                 disabled={loading}
-                                className="w-full py-5 bg-guanta-gradient text-white rounded-[1.5rem] font-black text-lg uppercase tracking-widest shadow-xl shadow-teal-500/30 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 mt-4"
+                                className="w-full py-5 bg-guanta-gradient text-white rounded-[1.5rem] font-black text-lg uppercase tracking-widest shadow-xl shadow-guanta-primary/30 hover:scale-[1.02] transition-all flex items-center justify-center gap-3 mt-4"
                             >
                                 <Save size={20} /> {isEditing ? 'Actualizar Usuario' : 'Crear Acceso'}
                             </button>

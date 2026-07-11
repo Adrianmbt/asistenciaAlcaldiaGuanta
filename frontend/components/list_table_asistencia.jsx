@@ -23,7 +23,6 @@ const AsistenciaTable = ({ registros, onEdit, onDelete, onMarcarSalida }) => {
         try {
             const doc = new jsPDF();
             
-            // Configuración de Colores Guanta
             const primaryColor = [0, 159, 161]; // #009FA1
             
             let reportData = [];
@@ -40,7 +39,6 @@ const AsistenciaTable = ({ registros, onEdit, onDelete, onMarcarSalida }) => {
                 reportData = registros;
             }
 
-            // Encabezado
             doc.setFontSize(18);
             doc.setTextColor(primaryColor[0], primaryColor[1], primaryColor[2]);
             doc.text(title, 14, 20);
@@ -73,7 +71,7 @@ const AsistenciaTable = ({ registros, onEdit, onDelete, onMarcarSalida }) => {
                     halign: 'center'
                 },
                 bodyStyles: { fontSize: 8, halign: 'center' },
-                alternateRowStyles: { fillColor: [250, 250, 250] },
+                alternateRowStyles: { fillColor: [255, 250, 248] },
                 margin: { top: 40 },
             });
 
@@ -86,66 +84,63 @@ const AsistenciaTable = ({ registros, onEdit, onDelete, onMarcarSalida }) => {
     };
 
     return (
-        <div className="bg-white rounded-[2rem] shadow-2xl shadow-teal-500/5 border border-cyan-50 overflow-hidden font-sans">
-            {/* Barra de Herramientas Superior */}
-            <div className="p-8 border-b border-cyan-50 bg-cyan-50/20 flex flex-col gap-6">
+        <div className="backdrop-blur-xl bg-white/60 rounded-[2rem] shadow-2xl shadow-guanta-primary/5 border border-white/40 overflow-hidden font-sans">
+            <div className="p-8 border-b border-white/40 bg-white/30 backdrop-blur-xl flex flex-col gap-6">
                 
                 <div className="flex flex-col md:flex-row justify-between items-center gap-6">
                     <div className="relative w-full md:w-[28rem] group">
                         <input
                             type="text"
                             placeholder="Buscar por cédula o nombre..."
-                            className="w-full pl-12 pr-4 py-3 bg-white border-2 border-transparent focus:border-guanta-primary rounded-2xl shadow-sm focus:shadow-teal-200/50 outline-none transition-all font-bold text-gray-700"
+                            className="w-full pl-12 pr-4 py-3 bg-white/40 border-2 border-white/60 focus:border-guanta-primary rounded-2xl shadow-sm backdrop-blur-sm outline-none transition-all font-bold text-gray-700"
                             onChange={(e) => setFilter(e.target.value)}
                         />
                         <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-guanta-primary opacity-40 group-focus-within:opacity-100 transition-opacity" size={20} />
                     </div>
 
-                    <div className="flex bg-white p-1 rounded-2xl border border-cyan-100 shadow-sm">
+                    <div className="flex bg-white/40 backdrop-blur-sm p-1 rounded-2xl border border-white/60 shadow-sm">
                         <button
                             onClick={() => setFilterType("TODOS")}
-                            className={`px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-all ${filterType === 'TODOS' ? 'bg-guanta-primary text-white shadow-lg shadow-teal-500/30' : 'text-gray-400 hover:text-guanta-primary'}`}
+                            className={`px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-all backdrop-blur-sm ${filterType === 'TODOS' ? 'bg-guanta-primary text-white shadow-lg shadow-guanta-primary/30' : 'text-gray-400 hover:text-guanta-primary hover:bg-white/40'}`}
                         >TODOS</button>
                         <button
                             onClick={() => setFilterType("personal")}
-                            className={`px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-all ${filterType === 'personal' ? 'bg-guanta-primary text-white shadow-lg shadow-teal-500/30' : 'text-gray-400 hover:text-guanta-primary'}`}
+                            className={`px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-all backdrop-blur-sm ${filterType === 'personal' ? 'bg-guanta-primary text-white shadow-lg shadow-guanta-primary/30' : 'text-gray-400 hover:text-guanta-primary hover:bg-white/40'}`}
                         >EMPLEADOS</button>
                         <button
                             onClick={() => setFilterType("visitante")}
-                            className={`px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-all ${filterType === 'visitante' ? 'bg-guanta-accent text-white shadow-lg shadow-teal-500/30' : 'text-gray-400 hover:text-guanta-accent'}`}
+                            className={`px-5 py-2 rounded-xl text-[10px] font-black tracking-widest transition-all backdrop-blur-sm ${filterType === 'visitante' ? 'bg-guanta-accent text-white shadow-lg shadow-guanta-primary/30' : 'text-gray-400 hover:text-guanta-accent hover:bg-white/40'}`}
                         >VISITANTES</button>
                     </div>
                 </div>
 
-                {/* Botones de Reportes PDF */}
-                <div className="flex flex-wrap gap-3 items-center border-t border-cyan-50 pt-6">
+                <div className="flex flex-wrap gap-3 items-center border-t border-white/40 pt-6">
                     <span className="text-[10px] font-black text-gray-400 uppercase tracking-widest mr-2">Exportar Reportes:</span>
                     <button 
                         onClick={() => exportToPDF('COMPLETO')}
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-800 text-white rounded-xl text-[10px] font-black tracking-widest hover:bg-black transition-all shadow-lg shadow-gray-200"
+                        className="flex items-center gap-2 px-4 py-2 bg-gray-800/90 backdrop-blur-sm text-white rounded-xl text-[10px] font-black tracking-widest hover:bg-gray-800 transition-all shadow-lg shadow-gray-200"
                     >
                         <FileText size={14} /> COMPLETO
                     </button>
                     <button 
                         onClick={() => exportToPDF('PERSONAL')}
-                        className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-xl text-[10px] font-black tracking-widest hover:bg-blue-700 transition-all shadow-lg shadow-blue-200"
+                        className="flex items-center gap-2 px-4 py-2 bg-guanta-primary/90 backdrop-blur-sm text-white rounded-xl text-[10px] font-black tracking-widest hover:bg-guanta-primary transition-all shadow-lg shadow-guanta-primary/20"
                     >
                         <UserCheck size={14} /> PERSONAL
                     </button>
                     <button 
                         onClick={() => exportToPDF('VISITANTE')}
-                        className="flex items-center gap-2 px-4 py-2 bg-amber-500 text-white rounded-xl text-[10px] font-black tracking-widest hover:bg-amber-600 transition-all shadow-lg shadow-amber-200"
+                        className="flex items-center gap-2 px-4 py-2 bg-amber-500/90 backdrop-blur-sm text-white rounded-xl text-[10px] font-black tracking-widest hover:bg-amber-500 transition-all shadow-lg shadow-amber-200"
                     >
                         <UserPlus size={14} /> VISITANTES
                     </button>
                 </div>
             </div>
 
-            {/* Tabla Estilo Guanta */}
             <div className="overflow-x-auto">
                 <table className="w-full text-left border-collapse">
                     <thead>
-                        <tr className="bg-white text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-cyan-50">
+                        <tr className="bg-white/40 text-gray-400 text-[10px] font-black uppercase tracking-[0.2em] border-b border-white/40">
                             <th className="px-8 py-5">Identificación / Nombre</th>
                             <th className="px-8 py-5">Origen / Ente</th>
                             <th className="px-8 py-5 text-center">Registro</th>
@@ -153,12 +148,12 @@ const AsistenciaTable = ({ registros, onEdit, onDelete, onMarcarSalida }) => {
                             <th className="px-8 py-5 text-right">Acciones</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-cyan-50/50">
+                    <tbody className="divide-y divide-white/30">
                         {filteredData.map((reg) => (
-                            <tr key={reg.id} className="group hover:bg-cyan-50/30 transition-all duration-300">
+                            <tr key={reg.id} className="group hover:bg-white/40 transition-all duration-300 backdrop-blur-sm">
                                 <td className="px-8 py-6">
                                     <div className="flex items-center gap-4">
-                                        <div className={`p-2 rounded-xl ${reg.tipo_persona === 'personal' ? 'bg-cyan-100' : 'bg-teal-100'}`}>
+                                        <div className={`p-2 rounded-xl backdrop-blur-sm ${reg.tipo_persona === 'personal' ? 'bg-guanta-primary/10' : 'bg-guanta-accent/10'}`}>
                                              {reg.tipo_persona === 'personal' ? <User size={18} className="text-guanta-primary"/> : <UserPlus size={18} className="text-guanta-accent"/>}
                                         </div>
                                         <div>
@@ -171,7 +166,7 @@ const AsistenciaTable = ({ registros, onEdit, onDelete, onMarcarSalida }) => {
                                 </td>
                                 <td className="px-8 py-6">
                                     <div className="flex flex-col">
-                                        <span className={`inline-flex items-center w-max px-3 py-1 rounded-full text-[9px] font-black tracking-tighter uppercase mb-1 ${reg.tipo_persona === 'personal' ? 'bg-cyan-100 text-guanta-primary' : 'bg-teal-100 text-teal-700'}`}>
+                                        <span className={`inline-flex items-center w-max px-3 py-1 rounded-full text-[9px] font-black tracking-tighter uppercase mb-1 backdrop-blur-sm ${reg.tipo_persona === 'personal' ? 'bg-guanta-primary/10 text-guanta-primary' : 'bg-guanta-accent/10 text-guanta-pink'}`}>
                                             {reg.tipo_persona === 'personal' ? 'Institucional' : 'Visitante'}
                                         </span>
                                         <span className="text-[11px] font-bold text-gray-500 uppercase">{reg.ente || 'Sin Ente'}</span>
@@ -206,16 +201,16 @@ const AsistenciaTable = ({ registros, onEdit, onDelete, onMarcarSalida }) => {
                                         {!reg.hora_salida && (
                                             <button
                                                 onClick={() => onMarcarSalida(reg.cedula_identidad)}
-                                                className="p-3 bg-emerald-500 text-white rounded-xl hover:bg-emerald-600 transition-all shadow-lg shadow-emerald-500/20" 
+                                                className="p-3 bg-emerald-500/90 backdrop-blur-sm text-white rounded-xl hover:bg-emerald-500 transition-all shadow-lg shadow-emerald-500/20" 
                                                 title="Marcar Salida"
                                             >
                                                 <LogOut size={16} />
                                             </button>
                                         )}
-                                        <button onClick={() => onEdit(reg)} className="p-3 bg-cyan-100 text-guanta-primary rounded-xl hover:bg-guanta-primary hover:text-white transition-all" title="Editar">
+                                        <button onClick={() => onEdit(reg)} className="p-3 bg-guanta-primary/10 backdrop-blur-sm text-guanta-primary rounded-xl hover:bg-guanta-primary hover:text-white transition-all" title="Editar">
                                             <Edit2 size={16} />
                                         </button>
-                                        <button onClick={() => onDelete(reg.id)} className="p-3 bg-rose-50 text-rose-600 rounded-xl hover:bg-rose-600 hover:text-white transition-all" title="Eliminar">
+                                        <button onClick={() => onDelete(reg.id)} className="p-3 bg-rose-50/80 backdrop-blur-sm text-rose-600 rounded-xl hover:bg-rose-500 hover:text-white transition-all" title="Eliminar">
                                             <Trash2 size={16} />
                                         </button>
                                     </div>
@@ -228,7 +223,7 @@ const AsistenciaTable = ({ registros, onEdit, onDelete, onMarcarSalida }) => {
 
             {filteredData.length === 0 && (
                 <div className="p-20 text-center flex flex-col items-center">
-                    <div className="bg-gray-50 p-6 rounded-full inline-block mb-4">
+                    <div className="bg-white/40 backdrop-blur-sm p-6 rounded-full inline-block mb-4 border border-white/60">
                         <Search className="text-gray-200" size={48} />
                     </div>
                     <div className="text-gray-400 font-bold uppercase text-[10px] tracking-widest max-w-[15rem]">

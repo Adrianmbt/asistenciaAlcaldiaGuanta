@@ -13,7 +13,6 @@ const Login = ({ onLoginSuccess }) => {
         setError(null);
 
         try {
-            // Preparar datos para OAuth2PasswordRequestForm (form-data)
             const formData = new URLSearchParams();
             formData.append('username', username);
             formData.append('password', password);
@@ -29,7 +28,6 @@ const Login = ({ onLoginSuccess }) => {
             const data = await response.json();
 
             if (response.ok) {
-                // Guardar token y notificar éxito
                 localStorage.setItem('token', data.access_token);
                 localStorage.setItem('user', JSON.stringify(data.user));
                 onLoginSuccess(data.user);
@@ -45,10 +43,9 @@ const Login = ({ onLoginSuccess }) => {
     };
 
     return (
-        <div className="min-h-screen bg-[#FFFBF9] flex items-center justify-center p-6 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')]">
-            <div className="w-full max-w-[1100px] bg-white rounded-[3rem] shadow-2xl flex flex-col md:flex-row overflow-hidden border border-cyan-50 animate-in fade-in zoom-in-95 duration-700">
+        <div className="min-h-screen bg-gradient-to-br from-orange-50/80 via-white to-orange-100/40 flex items-center justify-center p-6 backdrop-blur-sm">
+            <div className="w-full max-w-[1100px] backdrop-blur-xl bg-white/50 rounded-[3rem] shadow-2xl flex flex-col md:flex-row overflow-hidden border border-white/40 animate-in fade-in zoom-in-95 duration-700">
                 
-                {/* Panel Izquierdo: Visual & Branding */}
                 <div className="hidden md:flex md:w-1/2 bg-guanta-gradient p-16 flex-col justify-between relative overflow-hidden">
                     <div className="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
                         <div className="absolute top-20 -left-20 w-80 h-80 bg-white rounded-full blur-3xl"></div>
@@ -60,7 +57,7 @@ const Login = ({ onLoginSuccess }) => {
                         <h1 className="text-6xl font-black text-white tracking-tighter leading-none mb-4">
                             SISTEMA DE<br />CONTROL<br />DE ACCESO
                         </h1>
-                        <p className="text-cyan-100 font-bold uppercase tracking-[0.4em] text-xs bg-white/10 py-2 px-4 rounded-full inline-block border border-white/20">
+                        <p className="text-orange-100 font-bold uppercase tracking-[0.4em] text-xs bg-white/10 py-2 px-4 rounded-full inline-block border border-white/20 backdrop-blur-sm">
                             Alcaldía de Guanta 2026
                         </p>
                     </div>
@@ -72,7 +69,6 @@ const Login = ({ onLoginSuccess }) => {
                     </div>
                 </div>
 
-                {/* Panel Derecho: Formulario */}
                 <div className="w-full md:w-1/2 p-12 md:p-20 flex flex-col justify-center">
                     <div className="mb-10 block md:hidden text-center">
                         <img src="/img/logo_guanta.png" alt="Logo Guanta" className="w-24 h-24 mx-auto mb-4" />
@@ -85,7 +81,7 @@ const Login = ({ onLoginSuccess }) => {
                     </div>
 
                     {error && (
-                        <div className="mb-8 p-4 bg-rose-50 border border-rose-100 rounded-2xl flex items-center gap-3 text-rose-600 animate-in slide-in-from-top-4 duration-300">
+                        <div className="mb-8 p-4 backdrop-blur-xl bg-rose-50/80 border border-rose-100/60 rounded-2xl flex items-center gap-3 text-rose-600 animate-in slide-in-from-top-4 duration-300">
                             <AlertCircle size={20} />
                             <span className="text-xs font-black uppercase tracking-widest">{error}</span>
                         </div>
@@ -100,7 +96,7 @@ const Login = ({ onLoginSuccess }) => {
                                     required
                                     value={username}
                                     onChange={(e) => setUsername(e.target.value)}
-                                    className="w-full pl-14 pr-4 py-5 bg-gray-50 border-2 border-transparent focus:border-guanta-primary focus:bg-white rounded-2xl outline-none font-bold text-gray-800 transition-all text-lg"
+                                    className="w-full pl-14 pr-4 py-5 bg-white/40 border-2 border-white/60 focus:border-guanta-primary focus:bg-white/60 rounded-2xl outline-none font-bold text-gray-800 transition-all text-lg backdrop-blur-sm"
                                     placeholder="IDENTIFICADOR"
                                 />
                                 <User className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-guanta-primary transition-colors" size={24} />
@@ -115,7 +111,7 @@ const Login = ({ onLoginSuccess }) => {
                                     required
                                     value={password}
                                     onChange={(e) => setPassword(e.target.value)}
-                                    className="w-full pl-14 pr-4 py-5 bg-gray-50 border-2 border-transparent focus:border-guanta-primary focus:bg-white rounded-2xl outline-none font-bold text-gray-800 transition-all text-lg"
+                                    className="w-full pl-14 pr-4 py-5 bg-white/40 border-2 border-white/60 focus:border-guanta-primary focus:bg-white/60 rounded-2xl outline-none font-bold text-gray-800 transition-all text-lg backdrop-blur-sm"
                                     placeholder="••••••••"
                                 />
                                 <Lock className="absolute left-5 top-1/2 -translate-y-1/2 text-gray-300 group-focus-within:text-guanta-primary transition-colors" size={24} />
@@ -125,7 +121,7 @@ const Login = ({ onLoginSuccess }) => {
                         <button 
                             type="submit" 
                             disabled={loading}
-                            className="w-full py-6 bg-guanta-gradient text-white rounded-2xl font-black text-lg uppercase tracking-widest shadow-2xl shadow-teal-500/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 group disabled:bg-gray-400"
+                            className="w-full py-6 bg-guanta-gradient text-white rounded-2xl font-black text-lg uppercase tracking-widest shadow-2xl shadow-guanta-primary/40 hover:scale-[1.02] active:scale-95 transition-all flex items-center justify-center gap-3 group disabled:bg-gray-400"
                         >
                             {loading ? (
                                 <div className="h-6 w-6 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>

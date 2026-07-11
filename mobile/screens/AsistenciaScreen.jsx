@@ -10,13 +10,14 @@ import {
   Alert,
   RefreshControl,
   ScrollView,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { getAsistenciaHoy, marcarSalida, eliminarAsistencia } from '../api/client';
 
-const ORANGE = '#F05438';
+const ORANGE = '#009fa1';
 const ORANGE_LIGHT = '#FFF7ED';
 const AMBER = '#F59E0B';
 
@@ -26,6 +27,9 @@ export default function AsistenciaScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState('');
   const [filterType, setFilterType] = useState('TODOS');
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 600;
+  const contentMaxWidth = isTablet ? 600 : undefined;
 
   const fetchData = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
@@ -183,8 +187,8 @@ export default function AsistenciaScreen() {
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
       {/* Barra de Herramientas Premium */}
-      <View style={styles.toolbar}>
-        <View style={styles.searchContainer}>
+      <View style={[styles.toolbar, isTablet && { alignItems: 'center' }]}>
+        <View style={[styles.searchContainer, isTablet && { maxWidth: contentMaxWidth, width: '100%' }]}>
           <View style={styles.searchWrapper}>
             <Ionicons name="search" size={20} color={ORANGE} style={{ marginRight: 10 }} />
             <TextInput
@@ -197,7 +201,7 @@ export default function AsistenciaScreen() {
           </View>
         </View>
 
-        <View style={styles.filtersSection}>
+        <View style={[styles.filtersSection, isTablet && { maxWidth: contentMaxWidth, width: '100%' }]}>
           <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.filterRow}>
             {['TODOS', 'personal', 'visitante'].map((type) => (
               <TouchableOpacity
@@ -234,7 +238,7 @@ export default function AsistenciaScreen() {
           data={filteredData}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderItem}
-          contentContainerStyle={styles.list}
+          contentContainerStyle={[styles.list, isTablet && { maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }]}
           refreshControl={
             <RefreshControl
               refreshing={refreshing}
@@ -257,12 +261,12 @@ export default function AsistenciaScreen() {
 }
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#FFFBF9' },
+  safe: { flex: 1, backgroundColor: '#FFF7ED' },
   toolbar: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.7)',
     paddingBottom: 16,
     borderBottomWidth: 1,
-    borderBottomColor: '#f3f4f6',
+    borderBottomColor: 'rgba(255,255,255,0.4)',
     gap: 16,
     shadowColor: '#000',
     shadowOffset: { width: 0, height: 4 },
@@ -277,11 +281,11 @@ const styles = StyleSheet.create({
   searchWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     borderRadius: 18,
     paddingHorizontal: 16,
     borderWidth: 2,
-    borderColor: '#fed7aa',
+    borderColor: 'rgba(255,255,255,0.6)',
   },
   searchInput: {
     flex: 1,
@@ -301,9 +305,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 18,
     paddingVertical: 10,
     borderRadius: 14,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     borderWidth: 1,
-    borderColor: '#f3f4f6',
+    borderColor: 'rgba(255,255,255,0.6)',
   },
   filterBtnActive: { backgroundColor: ORANGE, borderColor: ORANGE },
   filterBtnText: { fontSize: 10, fontWeight: '900', color: '#9ca3af', letterSpacing: 1 },
@@ -323,7 +327,7 @@ const styles = StyleSheet.create({
   row: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.65)',
     borderRadius: 24,
     padding: 16,
     gap: 16,
@@ -333,7 +337,7 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
     elevation: 4,
     borderWidth: 1,
-    borderColor: '#fff1ec',
+    borderColor: 'rgba(255,255,255,0.6)',
   },
   typeIcon: {
     width: 54,
@@ -342,8 +346,8 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  typeIconOrange: { backgroundColor: '#fff7ed' },
-  typeIconAmber: { backgroundColor: '#fffbeb' },
+  typeIconOrange: { backgroundColor: 'rgba(0,159,161,0.08)' },
+  typeIconAmber: { backgroundColor: 'rgba(0,159,161,0.08)' },
   rowInfo: { flex: 1 },
   rowName: { fontSize: 16, fontWeight: '900', color: '#111', letterSpacing: -0.5 },
   rowCedula: { fontSize: 12, fontWeight: '700', color: '#9ca3af', marginTop: 2, letterSpacing: 0.5 },
@@ -357,8 +361,8 @@ const styles = StyleSheet.create({
     borderRadius: 8 
   },
   badgeDot: { width: 6, height: 6, borderRadius: 3 },
-  badgeOrange: { backgroundColor: '#fff7ed' },
-  badgeAmber: { backgroundColor: '#fffbeb' },
+  badgeOrange: { backgroundColor: 'rgba(0,159,161,0.08)' },
+  badgeAmber: { backgroundColor: 'rgba(0,159,161,0.08)' },
   badgeText: { fontSize: 9, fontWeight: '900', textTransform: 'uppercase', letterSpacing: 0.5 },
   rowEnte: { fontSize: 10, fontWeight: '700', color: '#9ca3af', flex: 1, textTransform: 'uppercase' },
   rowRight: { alignItems: 'flex-end', gap: 10 },
@@ -401,11 +405,11 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#f3f4f6',
+    borderColor: 'rgba(255,255,255,0.6)',
   },
   emptyText: { color: '#9ca3af', fontSize: 16, fontWeight: '700' },
 });

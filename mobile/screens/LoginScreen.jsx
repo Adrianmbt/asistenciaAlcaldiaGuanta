@@ -10,12 +10,13 @@ import {
   Platform,
   ScrollView,
   Image,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 
-const ORANGE = '#F05438';
+const ORANGE = '#009fa1';
 const AMBER = '#F59E0B';
 
 export default function LoginScreen() {
@@ -25,6 +26,9 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 600;
+  const contentMaxWidth = isTablet ? 480 : undefined;
 
   const handleLogin = async () => {
     if (!username.trim() || !password.trim()) {
@@ -49,11 +53,11 @@ export default function LoginScreen() {
         style={{ flex: 1 }}
       >
         <ScrollView
-          contentContainerStyle={styles.scroll}
+          contentContainerStyle={[styles.scroll, isTablet && { alignItems: 'center' }]}
           keyboardShouldPersistTaps="handled"
         >
           {/* Header Institucional Premium */}
-          <View style={styles.header}>
+          <View style={[styles.header, isTablet && { maxWidth: contentMaxWidth, width: '100%' }]}>
             <View style={styles.logoContainer}>
               <Image 
                 source={require('../assets/logo_guanta.png')} 
@@ -69,7 +73,7 @@ export default function LoginScreen() {
           </View>
 
           {/* Formulario Elevado */}
-          <View style={styles.card}>
+          <View style={[styles.card, isTablet && { maxWidth: contentMaxWidth, width: '100%', borderRadius: 48 }]}>
             <View style={styles.welcomeSection}>
               <Text style={styles.welcomeTitle}>Bienvenido, Oficial</Text>
               <Text style={styles.welcomeSubtitle}>
@@ -176,7 +180,7 @@ export default function LoginScreen() {
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: '#FFFBF9',
+    backgroundColor: '#FFF7ED',
   },
   scroll: {
     flexGrow: 1,
@@ -205,8 +209,8 @@ const styles = StyleSheet.create({
     height: 100,
     borderRadius: 50,
     borderWidth: 1,
-    borderColor: '#fed7aa',
-    backgroundColor: '#fff',
+    borderColor: 'rgba(255,255,255,0.6)',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     shadowColor: ORANGE,
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.15,
@@ -233,7 +237,7 @@ const styles = StyleSheet.create({
   },
   card: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.7)',
     borderTopLeftRadius: 48,
     borderTopRightRadius: 48,
     padding: 32,
@@ -244,7 +248,7 @@ const styles = StyleSheet.create({
     shadowRadius: 30,
     elevation: 20,
     borderWidth: 1,
-    borderColor: '#fff1ec',
+    borderColor: 'rgba(255,255,255,0.6)',
   },
   welcomeSection: {
     marginBottom: 32,
@@ -266,12 +270,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 12,
-    backgroundColor: '#fff1f2',
+    backgroundColor: 'rgba(0,159,161,0.08)',
     borderRadius: 16,
     padding: 16,
     marginBottom: 24,
     borderWidth: 1,
-    borderColor: '#fecdd3',
+    borderColor: 'rgba(0,159,161,0.15)',
   },
   errorIconCircle: {
     backgroundColor: '#f43f5e',
@@ -302,10 +306,10 @@ const styles = StyleSheet.create({
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     borderRadius: 20,
     borderWidth: 2,
-    borderColor: 'transparent',
+    borderColor: 'rgba(255,255,255,0.6)',
     paddingHorizontal: 16,
   },
   inputIcon: {
@@ -358,7 +362,7 @@ const styles = StyleSheet.create({
   footerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: '#f3f4f6',
+    backgroundColor: 'rgba(255,255,255,0.6)',
   },
   footer: {
     color: '#d1d5db',

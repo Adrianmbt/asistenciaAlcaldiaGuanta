@@ -10,13 +10,14 @@ import {
   KeyboardAvoidingView,
   Platform,
   Modal,
+  useWindowDimensions,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { CameraView, useCameraPermissions } from 'expo-camera';
 import { verificarCedula, registrarMovimiento } from '../api/client';
 
-const ORANGE = '#F05438';
+const ORANGE = '#009fa1';
 const AMBER = '#F59E0B';
 
 export default function VerificacionScreen() {
@@ -37,6 +38,9 @@ export default function VerificacionScreen() {
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const searchTimeout = useRef(null);
+  const { width } = useWindowDimensions();
+  const isTablet = width >= 600;
+  const contentMaxWidth = isTablet ? 600 : undefined;
 
   const handleCedulaChange = (value) => {
     setCedula(value);
@@ -159,11 +163,11 @@ export default function VerificacionScreen() {
         </Modal>
 
         <ScrollView
-          contentContainerStyle={styles.scroll}
+          contentContainerStyle={[styles.scroll, isTablet && { alignItems: 'center' }]}
           keyboardShouldPersistTaps="handled"
         >
           {/* Header Institucional */}
-          <View style={styles.premiumHeader}>
+          <View style={[styles.premiumHeader, isTablet && { width: '100%' }]}>
              <View style={styles.headerBadge}>
                 <Ionicons name="shield-checkmark" size={32} color="#fff" />
              </View>
@@ -171,7 +175,7 @@ export default function VerificacionScreen() {
              <Text style={styles.headerSubtitle}>ALCALDÍA DE GUANTA</Text>
           </View>
 
-          <View style={styles.content}>
+          <View style={[styles.content, isTablet && { maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }]}>
             {/* Mensaje de estado */}
             {message && (
               <View
@@ -385,9 +389,9 @@ const vfStyles = StyleSheet.create({
     textTransform: 'uppercase',
   },
   input: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     borderWidth: 2,
-    borderColor: '#fef3c7',
+    borderColor: 'rgba(255,251,235,0.6)',
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 14,
@@ -398,7 +402,7 @@ const vfStyles = StyleSheet.create({
 });
 
 const styles = StyleSheet.create({
-  safe: { flex: 1, backgroundColor: '#fff' },
+  safe: { flex: 1, backgroundColor: '#FFF7ED' },
   scroll: { flexGrow: 1 },
   premiumHeader: {
     backgroundColor: ORANGE,
@@ -432,7 +436,7 @@ const styles = StyleSheet.create({
   },
   content: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.7)',
     marginTop: -40,
     borderTopLeftRadius: 40,
     borderTopRightRadius: 40,
@@ -468,10 +472,10 @@ const styles = StyleSheet.create({
   searchWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     borderRadius: 24,
     borderWidth: 2,
-    borderColor: '#fed7aa',
+    borderColor: 'rgba(255,255,255,0.6)',
     shadowColor: ORANGE,
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.05,
@@ -500,11 +504,11 @@ const styles = StyleSheet.create({
   },
   // Personal card
   personalCard: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.65)',
     borderRadius: 32,
     padding: 24,
     borderWidth: 2,
-    borderColor: 'rgba(240,84,56,0.1)',
+    borderColor: 'rgba(255,255,255,0.6)',
     shadowColor: ORANGE,
     shadowOffset: { width: 0, height: 15 },
     shadowOpacity: 0.1,
@@ -514,7 +518,7 @@ const styles = StyleSheet.create({
   },
   personalCardHeader: { flexDirection: 'row', alignItems: 'center', gap: 20, marginBottom: 24 },
   avatarCircle: {
-    backgroundColor: '#fff',
+    backgroundColor: 'rgba(255,255,255,0.65)',
     borderRadius: 40,
     padding: 16,
     shadowColor: ORANGE,
@@ -523,7 +527,7 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
     elevation: 5,
     borderWidth: 1,
-    borderColor: '#fed7aa',
+    borderColor: 'rgba(255,255,255,0.6)',
   },
   badgePersonal: {
     backgroundColor: ORANGE,
@@ -544,12 +548,12 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     gap: 6,
-    backgroundColor: '#fff7ed',
+    backgroundColor: 'rgba(0,159,161,0.08)',
     paddingHorizontal: 12,
     paddingVertical: 6,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: '#ffedd5',
+    borderColor: 'rgba(0,159,161,0.15)',
   },
   tagOrangeText: { color: ORANGE, fontSize: 11, fontWeight: '900', textTransform: 'uppercase' },
   confirmBtn: {
@@ -570,11 +574,11 @@ const styles = StyleSheet.create({
   confirmBtnText: { color: '#fff', fontSize: 16, fontWeight: '900', letterSpacing: 1.5 },
   // Visitor card
   visitorCard: {
-    backgroundColor: '#fffbeb',
+    backgroundColor: 'rgba(255,251,235,0.65)',
     borderRadius: 32,
     padding: 24,
     borderWidth: 2,
-    borderColor: '#fef3c7',
+    borderColor: 'rgba(255,251,235,0.6)',
     shadowColor: AMBER,
     shadowOffset: { width: 0, height: 15 },
     shadowOpacity: 0.08,
@@ -616,11 +620,11 @@ const styles = StyleSheet.create({
     width: 120,
     height: 120,
     borderRadius: 60,
-    backgroundColor: '#f9fafb',
+    backgroundColor: 'rgba(255,255,255,0.5)',
     justifyContent: 'center',
     alignItems: 'center',
     borderWidth: 1,
-    borderColor: '#f3f4f6',
+    borderColor: 'rgba(255,255,255,0.6)',
   },
   emptyText: { color: '#9ca3af', fontSize: 15, fontWeight: '700', textAlign: 'center', maxWidth: '80%' },
   // Scanner modal
@@ -648,7 +652,7 @@ const styles = StyleSheet.create({
     borderRadius: 32,
     justifyContent: 'center',
     alignItems: 'center',
-    backgroundColor: 'rgba(240,84,56,0.15)',
+    backgroundColor: 'rgba(0,159,161,0.15)',
   },
   scannerText: {
     color: '#fff',
