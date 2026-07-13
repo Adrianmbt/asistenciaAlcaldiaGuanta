@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import VerificationScreen from './components/verificacion'
 import AsistenciaTable from './components/list_table_asistencia'
 import GestionUsuarios from './components/gestion_usuarios'
@@ -12,6 +12,7 @@ function App() {
   const [activeTab, setActiveTab] = useState('verificacion');
   const [registros, setRegistros] = useState([]);
   const [errorHeader, setErrorHeader] = useState(null);
+  const wsRef = useRef(null);
 
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [currentEdit, setCurrentEdit] = useState(null);
@@ -24,6 +25,60 @@ function App() {
       setUserSession(JSON.parse(user));
     }
   }, []);
+
+  const wsRetryRef = useRef(0);
+  const wsTimerRef = useRef(null);
+
+  const connectWebSocket = () => {
+    if (wsRef.current && (wsRef.current.readyState === WebSocket.OPEN || wsRef.current.readyState === WebSocket.CONNECTING)) return;
+
+    const wsUrl = `ws://${window.location.hostname}:8000/ws`;
+    try {
+      wsRef.current = new WebSocket(wsUrl);
+    } catch (e) {
+      scheduleWsReconnect();
+      return;
+    }
+
+    wsRef.current.onopen = () => {
+      wsRetryRef.current = 0;
+      console.log('WebSocket connected');
+    };
+
+    wsRef.current.onmessage = (event) => {
+      try {
+        const data = JSON.parse(event.data);
+        if (data.type === 'asistencia') {
+          fetchHoy();
+        }
+      } catch (e) {
+        // silent
+      }
+    };
+
+    wsRef.current.onclose = () => {
+      scheduleWsReconnect();
+    };
+
+    wsRef.current.onerror = () => {};
+  };
+
+  const scheduleWsReconnect = () => {
+    if (wsRetryRef.current >= 10) return;
+    const delay = Math.min(2000 * Math.pow(1.5, wsRetryRef.current), 30000);
+    wsRetryRef.current++;
+    wsTimerRef.current = setTimeout(connectWebSocket, delay);
+  };
+
+  useEffect(() => {
+    if (isLoggedIn) {
+      connectWebSocket();
+      return () => {
+        if (wsTimerRef.current) clearTimeout(wsTimerRef.current);
+        if (wsRef.current) wsRef.current.close();
+      };
+    }
+  }, [isLoggedIn]);
 
   const fetchHoy = async () => {
     if (!isLoggedIn) return;
@@ -50,8 +105,6 @@ function App() {
   useEffect(() => {
     if (isLoggedIn) {
       fetchHoy();
-      const interval = setInterval(fetchHoy, 30000);
-      return () => clearInterval(interval);
     }
   }, [isLoggedIn]);
 
@@ -144,9 +197,9 @@ function App() {
 
       <aside className="w-full md:w-[320px] backdrop-blur-xl bg-white/50 border-r border-white/40 p-10 flex flex-col gap-12 relative">
         <div className="flex flex-col items-center gap-6">
-          <div className="relative group p-1 bg-white/60 backdrop-blur-sm rounded-full shadow-lg border border-white/60">
+          <div className="relative group p-2 bg-white/60 backdrop-blur-sm rounded-2xl shadow-lg border border-white/60 overflow-hidden">
             <div className="absolute inset-0 bg-guanta-primary blur-3xl opacity-5 group-hover:opacity-10 transition-opacity"></div>
-            <img src="/img/logo_guanta.png" alt="Logo Guanta" className="w-24 h-24 relative z-10 transition-transform group-hover:scale-110 duration-500 rounded-full object-cover" />
+            <img src="/img/logo_guanta.webp" alt="Logo Guanta" className="w-36 h-20 relative z-10 transition-transform group-hover:scale-105 duration-500 object-contain" />
           </div>
           <div className="text-center">
             <h1 className="font-black text-2xl text-gray-900 tracking-tighter uppercase leading-none mb-1">Guanta</h1>

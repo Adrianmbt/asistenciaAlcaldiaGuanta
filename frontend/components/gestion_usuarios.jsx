@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { Search, UserPlus, Edit2, Trash2, Shield, Mail, User, Check, X, Save, ShieldAlert, Key } from 'lucide-react';
 
 const API_BASE_URL = '/api/usuarios';
@@ -7,6 +7,7 @@ const GestionUsuarios = () => {
     const [usuarios, setUsuarios] = useState([]);
     const [loading, setLoading] = useState(false);
     const [filter, setFilter] = useState("");
+    const wsRef = useRef(null);
     
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isEditing, setIsEditing] = useState(false);
@@ -31,8 +32,54 @@ const GestionUsuarios = () => {
         }
     };
 
+    const wsRetryRef = useRef(0);
+    const wsTimerRef = useRef(null);
+
+    const connectWebSocket = () => {
+        if (wsRef.current && (wsRef.current.readyState === WebSocket.OPEN || wsRef.current.readyState === WebSocket.CONNECTING)) return;
+
+        const wsUrl = `ws://${window.location.hostname}:8000/ws`;
+        try {
+            wsRef.current = new WebSocket(wsUrl);
+        } catch (e) {
+            scheduleReconnect();
+            return;
+        }
+
+        wsRef.current.onopen = () => {
+            wsRetryRef.current = 0;
+        };
+
+        wsRef.current.onmessage = (event) => {
+            try {
+                const data = JSON.parse(event.data);
+                if (data.type === 'usuarios') {
+                    fetchUsuarios();
+                }
+            } catch (e) {}
+        };
+
+        wsRef.current.onclose = () => {
+            scheduleReconnect();
+        };
+
+        wsRef.current.onerror = () => {};
+    };
+
+    const scheduleReconnect = () => {
+        if (wsRetryRef.current >= 10) return;
+        const delay = Math.min(2000 * Math.pow(1.5, wsRetryRef.current), 30000);
+        wsRetryRef.current++;
+        wsTimerRef.current = setTimeout(connectWebSocket, delay);
+    };
+
     useEffect(() => {
         fetchUsuarios();
+        connectWebSocket();
+        return () => {
+            if (wsTimerRef.current) clearTimeout(wsTimerRef.current);
+            if (wsRef.current) wsRef.current.close();
+        };
     }, []);
 
     const filteredUsers = useMemo(() => {

@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Alert,
   RefreshControl,
   ScrollView,
   useWindowDimensions,
@@ -15,7 +14,8 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { getAsistenciaHoy, marcarSalida, eliminarAsistencia } from '../api/client';
+import { getAsistenciaHoy, marcarSalida, eliminarAsistencia, addWsListener } from '../api/client';
+import CustomAlert from '../components/CustomAlert';
 
 const ORANGE = '#009fa1';
 const ORANGE_LIGHT = '#FFF7ED';
@@ -31,6 +31,27 @@ export default function AsistenciaScreen() {
   const isTablet = width >= 600;
   const contentMaxWidth = isTablet ? 600 : undefined;
 
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({ type: 'info', title: '', message: '' });
+  const [pendingAction, setPendingAction] = useState(null);
+
+  const showAlert = (type, title, message, action = null) => {
+    setAlertConfig({ type, title, message });
+    setPendingAction(() => action);
+    setAlertVisible(true);
+  };
+
+  const handleAlertConfirm = () => {
+    setAlertVisible(false);
+    if (pendingAction) pendingAction();
+    setPendingAction(null);
+  };
+
+  const handleAlertCancel = () => {
+    setAlertVisible(false);
+    setPendingAction(null);
+  };
+
   const fetchData = async (isRefresh = false) => {
     if (isRefresh) setRefreshing(true);
     else setLoading(true);
@@ -38,7 +59,7 @@ export default function AsistenciaScreen() {
       const data = await getAsistenciaHoy();
       setRegistros(data);
     } catch (e) {
-      Alert.alert('Error', e.message || 'No se pudo cargar la asistencia');
+      showAlert('error', 'Error', e.message || 'No se pudo cargar la asistencia');
     } finally {
       setLoading(false);
       setRefreshing(false);
@@ -52,39 +73,37 @@ export default function AsistenciaScreen() {
     }, [])
   );
 
+  useEffect(() => {
+    const unsubscribe = addWsListener((message) => {
+      if (message.type === 'asistencia') {
+        fetchData();
+      }
+    });
+    return unsubscribe;
+  }, []);
+
   const handleMarcarSalida = async (cedula) => {
-    Alert.alert('Confirmar Salida', `¿Marcar salida para cédula ${cedula}?`, [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Confirmar',
-        onPress: async () => {
-          try {
-            await marcarSalida(cedula);
-            fetchData();
-          } catch (e) {
-            Alert.alert('Error', e.message);
-          }
-        },
-      },
-    ]);
+    showAlert('confirm', 'Confirmar Salida', `¿Marcar salida para cédula ${cedula}?`, async () => {
+      try {
+        await marcarSalida(cedula);
+        showAlert('success', 'Éxito', 'Salida registrada correctamente');
+        fetchData();
+      } catch (e) {
+        showAlert('error', 'Error', e.message);
+      }
+    });
   };
 
   const handleEliminar = async (id) => {
-    Alert.alert('Eliminar Registro', '¿Está seguro de eliminar este registro?', [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Eliminar',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await eliminarAsistencia(id);
-            fetchData();
-          } catch (e) {
-            Alert.alert('Error', e.message);
-          }
-        },
-      },
-    ]);
+    showAlert('confirm', 'Eliminar Registro', '¿Está seguro de eliminar este registro?', async () => {
+      try {
+        await eliminarAsistencia(id);
+        showAlert('success', 'Éxito', 'Registro eliminado correctamente');
+        fetchData();
+      } catch (e) {
+        showAlert('error', 'Error', e.message);
+      }
+    });
   };
 
   const filteredData = registros.filter((item) => {
@@ -256,6 +275,16 @@ export default function AsistenciaScreen() {
           }
         />
       )}
+
+      <CustomAlert
+        visible={alertVisible}
+        type={alertConfig.type}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onConfirm={handleAlertConfirm}
+        onCancel={handleAlertCancel}
+        showCancel={alertConfig.type === 'confirm'}
+      />
     </SafeAreaView>
   );
 }

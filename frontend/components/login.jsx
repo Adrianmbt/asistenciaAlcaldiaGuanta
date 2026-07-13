@@ -53,7 +53,7 @@ const Login = ({ onLoginSuccess }) => {
                     </div>
                     
                     <div className="relative z-10">
-                        <img src="/img/logo_guanta.png" alt="Logo Guanta" className="w-32 h-32 mb-8 drop-shadow-2xl brightness-0 invert" />
+                        <img src="/img/logo_guanta.webp" alt="Logo Guanta" className="w-40 h-24 mb-8 drop-shadow-2xl rounded" />
                         <h1 className="text-6xl font-black text-white tracking-tighter leading-none mb-4">
                             SISTEMA DE<br />CONTROL<br />DE ACCESO
                         </h1>
@@ -71,7 +71,7 @@ const Login = ({ onLoginSuccess }) => {
 
                 <div className="w-full md:w-1/2 p-12 md:p-20 flex flex-col justify-center">
                     <div className="mb-10 block md:hidden text-center">
-                        <img src="/img/logo_guanta.png" alt="Logo Guanta" className="w-24 h-24 mx-auto mb-4" />
+                        <img src="/img/logo_guanta.webp" alt="Logo Guanta" className="w-32 h-20 mx-auto mb-4 rounded" />
                         <h2 className="text-3xl font-black text-gray-900 tracking-tighter uppercase leading-none">Login de Guardia</h2>
                     </div>
 

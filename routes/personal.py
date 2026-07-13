@@ -4,6 +4,7 @@ from database import get_db
 from datetime import datetime
 import models, schemas
 from typing import List
+from websocket_manager import manager
 
 router = APIRouter()
 
@@ -129,7 +130,7 @@ def obtener_empleado(id: int, db: Session = Depends(get_db)):
     return emp
 
 @router.post("/", response_model=schemas.EmpleadoRead)
-def crear_empleado(data: schemas.EmpleadoBase, db: Session = Depends(get_db)):
+async def crear_empleado(data: schemas.EmpleadoBase, db: Session = Depends(get_db)):
     existe = db.query(models.Empleado).filter(models.Empleado.cedula == data.cedula).first()
     if existe:
         raise HTTPException(status_code=400, detail="Cédula ya registrada")
@@ -137,10 +138,11 @@ def crear_empleado(data: schemas.EmpleadoBase, db: Session = Depends(get_db)):
     db.add(empleado)
     db.commit()
     db.refresh(empleado)
+    await manager.broadcast({"type": "personal", "action": "create"})
     return empleado
 
 @router.put("/{id}", response_model=schemas.EmpleadoRead)
-def actualizar_empleado(id: int, data: schemas.EmpleadoBase, db: Session = Depends(get_db)):
+async def actualizar_empleado(id: int, data: schemas.EmpleadoBase, db: Session = Depends(get_db)):
     emp = db.query(models.Empleado).filter(models.Empleado.id == id).first()
     if not emp:
         raise HTTPException(status_code=404, detail="Empleado no encontrado")
@@ -148,13 +150,15 @@ def actualizar_empleado(id: int, data: schemas.EmpleadoBase, db: Session = Depen
         setattr(emp, k, v)
     db.commit()
     db.refresh(emp)
+    await manager.broadcast({"type": "personal", "action": "update"})
     return emp
 
 @router.delete("/{id}")
-def eliminar_empleado(id: int, db: Session = Depends(get_db)):
+async def eliminar_empleado(id: int, db: Session = Depends(get_db)):
     emp = db.query(models.Empleado).filter(models.Empleado.id == id).first()
     if not emp:
         raise HTTPException(status_code=404, detail="Empleado no encontrado")
     emp.deleted_at = datetime.now()
     db.commit()
+    await manager.broadcast({"type": "personal", "action": "delete"})
     return {"status": "ok", "message": "Empleado desactivado correctamente"}

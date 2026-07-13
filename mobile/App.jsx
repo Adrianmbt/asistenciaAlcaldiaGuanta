@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { View, Text, ActivityIndicator, StyleSheet, TouchableOpacity, useWindowDimensions } from 'react-native';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
@@ -8,6 +8,7 @@ import { StatusBar } from 'expo-status-bar';
 import { Ionicons } from '@expo/vector-icons';
 
 import { AuthProvider, useAuth } from './context/AuthContext';
+import { connectWebSocket } from './api/client';
 import LoginScreen from './screens/LoginScreen';
 import VerificacionScreen from './screens/VerificacionScreen';
 import AsistenciaScreen from './screens/AsistenciaScreen';
@@ -187,6 +188,10 @@ function RootNavigator() {
 }
 
 export default function App() {
+  useEffect(() => {
+    connectWebSocket();
+  }, []);
+
   return (
     <SafeAreaProvider>
       <AuthProvider>

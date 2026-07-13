@@ -60,7 +60,7 @@ export default function LoginScreen() {
           <View style={[styles.header, isTablet && { maxWidth: contentMaxWidth, width: '100%' }]}>
             <View style={styles.logoContainer}>
               <Image 
-                source={require('../assets/logo_guanta.png')} 
+                source={require('../assets/logo_guanta.webp')} 
                 style={styles.logo}
                 resizeMode="cover"
               />

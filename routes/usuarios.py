@@ -3,12 +3,13 @@ from sqlalchemy.orm import Session
 from typing import List
 import models, schemas, auth
 from database import get_db
+from websocket_manager import manager
 
 router = APIRouter()
 
 # --- CREATE ---
 @router.post("/", response_model=schemas.UsuarioRead, status_code=status.HTTP_201_CREATED)
-def crear_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db)):
+async def crear_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db)):
     # Verificar si el username ya existe
     db_user = db.query(models.UsuarioSistema).filter(models.UsuarioSistema.username == usuario.username).first()
     if db_user:
@@ -29,6 +30,7 @@ def crear_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db))
     db.add(nuevo_usuario)
     db.commit()
     db.refresh(nuevo_usuario)
+    await manager.broadcast({"type": "usuarios", "action": "create"})
     return nuevo_usuario
 
 # --- READ ALL ---
@@ -46,7 +48,7 @@ def obtener_usuario(usuario_id: int, db: Session = Depends(get_db)):
 
 # --- UPDATE ---
 @router.put("/{usuario_id}", response_model=schemas.UsuarioRead)
-def actualizar_usuario(usuario_id: int, usuario_update: schemas.UsuarioCreate, db: Session = Depends(get_db)):
+async def actualizar_usuario(usuario_id: int, usuario_update: schemas.UsuarioCreate, db: Session = Depends(get_db)):
     db_usuario = db.query(models.UsuarioSistema).filter(models.UsuarioSistema.id == usuario_id).first()
     if not db_usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
@@ -62,11 +64,12 @@ def actualizar_usuario(usuario_id: int, usuario_update: schemas.UsuarioCreate, d
         
     db.commit()
     db.refresh(db_usuario)
+    await manager.broadcast({"type": "usuarios", "action": "update"})
     return db_usuario
 
 # --- DELETE (Lógico) ---
 @router.delete("/{usuario_id}")
-def eliminar_usuario(usuario_id: int, db: Session = Depends(get_db)):
+async def eliminar_usuario(usuario_id: int, db: Session = Depends(get_db)):
     db_usuario = db.query(models.UsuarioSistema).filter(models.UsuarioSistema.id == usuario_id).first()
     if not db_usuario:
         raise HTTPException(status_code=404, detail="Usuario no encontrado")
@@ -74,4 +77,5 @@ def eliminar_usuario(usuario_id: int, db: Session = Depends(get_db)):
     # Preferimos desactivar en lugar de borrar físicamente para mantener integridad de logs
     db_usuario.activo = 0
     db.commit()
+    await manager.broadcast({"type": "usuarios", "action": "delete"})
     return {"message": "Usuario desactivado correctamente"}

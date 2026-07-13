@@ -1,4 +1,4 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import {
   View,
   Text,
@@ -7,7 +7,6 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  Alert,
   Modal,
   ScrollView,
   KeyboardAvoidingView,
@@ -17,8 +16,9 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { getUsuarios, crearUsuario, actualizarUsuario, eliminarUsuario } from '../api/client';
+import { getUsuarios, crearUsuario, actualizarUsuario, eliminarUsuario, addWsListener } from '../api/client';
 import { useAuth } from '../context/AuthContext';
+import CustomAlert from '../components/CustomAlert';
 
 const ORANGE = '#009fa1';
 const ORANGE_LIGHT = '#FFF7ED';
@@ -45,13 +45,34 @@ export default function UsuariosScreen() {
   const isTablet = width >= 600;
   const contentMaxWidth = isTablet ? 600 : undefined;
 
+  const [alertVisible, setAlertVisible] = useState(false);
+  const [alertConfig, setAlertConfig] = useState({ type: 'info', title: '', message: '' });
+  const [pendingAction, setPendingAction] = useState(null);
+
+  const showAlert = (type, title, message, action = null) => {
+    setAlertConfig({ type, title, message });
+    setPendingAction(() => action);
+    setAlertVisible(true);
+  };
+
+  const handleAlertConfirm = () => {
+    setAlertVisible(false);
+    if (pendingAction) pendingAction();
+    setPendingAction(null);
+  };
+
+  const handleAlertCancel = () => {
+    setAlertVisible(false);
+    setPendingAction(null);
+  };
+
   const fetchData = async () => {
     setLoading(true);
     try {
       const data = await getUsuarios();
       setUsuarios(data);
     } catch (e) {
-      Alert.alert('Error', e.message);
+      showAlert('error', 'Error', e.message);
     } finally {
       setLoading(false);
     }
@@ -62,6 +83,15 @@ export default function UsuariosScreen() {
       fetchData();
     }, [])
   );
+
+  useEffect(() => {
+    const unsubscribe = addWsListener((message) => {
+      if (message.type === 'usuarios') {
+        fetchData();
+      }
+    });
+    return unsubscribe;
+  }, []);
 
   const filteredUsuarios = usuarios.filter(
     (u) =>
@@ -86,11 +116,11 @@ export default function UsuariosScreen() {
 
   const handleSave = async () => {
     if (!form.username.trim() || !form.nombre_completo.trim()) {
-      Alert.alert('Campos requeridos', 'Usuario y nombre completo son obligatorios.');
+      showAlert('warning', 'Campos requeridos', 'Usuario y nombre completo son obligatorios.');
       return;
     }
     if (!isEditing && !form.password.trim()) {
-      Alert.alert('Contraseña requerida', 'Debe ingresar una contraseña para el nuevo usuario.');
+      showAlert('warning', 'Contraseña requerida', 'Debe ingresar una contraseña para el nuevo usuario.');
       return;
     }
     setSaving(true);
@@ -101,30 +131,25 @@ export default function UsuariosScreen() {
         await crearUsuario(form);
       }
       setModalVisible(false);
+      showAlert('success', 'Éxito', isEditing ? 'Usuario actualizado correctamente' : 'Usuario creado correctamente');
       fetchData();
     } catch (e) {
-      Alert.alert('Error', e.message);
+      showAlert('error', 'Error', e.message);
     } finally {
       setSaving(false);
     }
   };
 
   const handleDesactivar = (id, nombre) => {
-    Alert.alert('Desactivar Usuario', `¿Desactivar a ${nombre}?`, [
-      { text: 'Cancelar', style: 'cancel' },
-      {
-        text: 'Desactivar',
-        style: 'destructive',
-        onPress: async () => {
-          try {
-            await eliminarUsuario(id);
-            fetchData();
-          } catch (e) {
-            Alert.alert('Error', e.message);
-          }
-        },
-      },
-    ]);
+    showAlert('confirm', 'Desactivar Usuario', `¿Desactivar a ${nombre}?`, async () => {
+      try {
+        await eliminarUsuario(id);
+        showAlert('success', 'Éxito', 'Usuario desactivado correctamente');
+        fetchData();
+      } catch (e) {
+        showAlert('error', 'Error', e.message);
+      }
+    });
   };
 
   const getRolColor = (rol) => {
@@ -354,6 +379,16 @@ export default function UsuariosScreen() {
           </KeyboardAvoidingView>
         </SafeAreaView>
       </Modal>
+
+      <CustomAlert
+        visible={alertVisible}
+        type={alertConfig.type}
+        title={alertConfig.title}
+        message={alertConfig.message}
+        onConfirm={handleAlertConfirm}
+        onCancel={handleAlertCancel}
+        showCancel={alertConfig.type === 'confirm'}
+      />
     </SafeAreaView>
   );
 }

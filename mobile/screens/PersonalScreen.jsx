@@ -6,7 +6,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
-import { getPersonal, getCargos, getDepartamentos, getEntes } from '../api/client';
+import { getPersonal, getCargos, getDepartamentos, getEntes, addWsListener } from '../api/client';
 
 const ORANGE = '#009fa1';
 const ITEMS_PER_PAGE = 5;
@@ -41,6 +41,15 @@ export default function PersonalScreen() {
   };
 
   useFocusEffect(useCallback(() => { fetchData(); }, []));
+
+  useEffect(() => {
+    const unsubscribe = addWsListener((message) => {
+      if (message.type === 'personal') {
+        fetchData();
+      }
+    });
+    return unsubscribe;
+  }, []);
 
   const getCargoName = (id) => cargos.find(c => c.id === id)?.nombre || '';
   const getDeptoName = (id) => deptos.find(d => d.id === id)?.nombre || '';

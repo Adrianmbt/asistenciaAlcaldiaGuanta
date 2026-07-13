@@ -1,7 +1,8 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 import database, models
 from routes import usuarios, asistencia, auth_routes, personal
+from websocket_manager import manager
 
 # Crear tablas en la DB
 models.Base.metadata.create_all(bind=database.engine)
@@ -55,3 +56,12 @@ app.include_router(personal.router, prefix="/personal", tags=["Gestión de Perso
 @app.get("/")
 def read_root():
     return {"institucion": "Alcaldía de Guanta", "status": "Online"}
+
+@app.websocket("/ws")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
+    try:
+        while True:
+            await websocket.receive_text()
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)

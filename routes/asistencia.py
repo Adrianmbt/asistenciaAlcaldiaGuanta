@@ -3,6 +3,7 @@ from sqlalchemy.orm import Session
 from database import get_db
 from datetime import datetime
 import models, schemas
+from websocket_manager import manager
 
 router = APIRouter()
 
@@ -36,7 +37,7 @@ def verificar_cedula(cedula: str, db: Session = Depends(get_db)):
     }
 
 @router.post("/registrar", response_model=schemas.AsistenciaRead)
-def registrar_movimiento(
+async def registrar_movimiento(
     cedula: str,
     motivo: str = "Ingreso Institucional",
     piso: str = "Planta Baja",
@@ -64,6 +65,7 @@ def registrar_movimiento(
         registro_hoy.hora_salida = ahora
         db.commit()
         db.refresh(registro_hoy)
+        await manager.broadcast({"type": "asistencia", "action": "update"})
         return registro_hoy
 
     tipo = models.TipoPersona.PERSONAL if empleado else models.TipoPersona.VISITANTE
@@ -81,6 +83,7 @@ def registrar_movimiento(
     db.add(nuevo_acceso)
     db.commit()
     db.refresh(nuevo_acceso)
+    await manager.broadcast({"type": "asistencia", "action": "create"})
     return nuevo_acceso
 
 @router.get("/hoy")
@@ -122,16 +125,17 @@ def reporte_hoy(db: Session = Depends(get_db)):
     return resultado
 
 @router.delete("/{id}")
-def eliminar_asistencia(id: int, db: Session = Depends(get_db)):
+async def eliminar_asistencia(id: int, db: Session = Depends(get_db)):
     registro = db.query(models.Asistencia).filter(models.Asistencia.id == id).first()
     if not registro:
         raise HTTPException(status_code=404, detail="Registro no encontrado")
     db.delete(registro)
     db.commit()
+    await manager.broadcast({"type": "asistencia", "action": "delete"})
     return {"status": "ok", "message": "Registro eliminado con éxito"}
 
 @router.put("/{id}")
-def editar_asistencia(id: int, nombre: str = None, motivo: str = None, piso: str = None, db: Session = Depends(get_db)):
+async def editar_asistencia(id: int, nombre: str = None, motivo: str = None, piso: str = None, db: Session = Depends(get_db)):
     registro = db.query(models.Asistencia).filter(models.Asistencia.id == id).first()
     if not registro:
         raise HTTPException(status_code=404, detail="Registro no encontrado")
@@ -143,4 +147,5 @@ def editar_asistencia(id: int, nombre: str = None, motivo: str = None, piso: str
         registro.piso_destino = piso
     db.commit()
     db.refresh(registro)
+    await manager.broadcast({"type": "asistencia", "action": "update"})
     return registro
