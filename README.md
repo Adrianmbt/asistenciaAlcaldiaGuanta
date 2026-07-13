@@ -8,9 +8,9 @@ Sistema integral de gestión y control de asistencia diseñado para la Portería
 ┌─────────────────────────────────────────────────────────┐
 │                     VPS / Servidor                       │
 │  ┌──────────────┐  ┌──────────────┐  ┌──────────────┐  │
-│  │   Backend     │  │   Frontend   │  │  SQLite DB   │  │
-│  │  FastAPI      │  │  React+Vite  │  │  (local)     │  │
-│  │  :8000        │  │  :5173       │  │              │  │
+│  │   Backend    │  │   Frontend   │  │  SQLite DB   │  │
+│  │  FastAPI     │  │  React+Vite  │  │  (local)     │  │
+│  │  :8000       │  │  :5173       │  │              │  │
 │  └──────┬───────┘  └──────────────┘  └──────────────┘  │
 │         │                                                │
 └─────────┼────────────────────────────────────────────────┘
