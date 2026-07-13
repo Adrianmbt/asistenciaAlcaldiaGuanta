@@ -1,5 +1,5 @@
-export const BASE_URL = 'http://192.168.1.102:8000';
-export const WS_URL = 'ws://192.168.1.102:8000/ws';
+export const BASE_URL = 'http://10.1.1.211:8000';
+export const WS_URL = 'ws://10.1.1.211:8000/ws';
 
 let authToken = null;
 let ws = null;

@@ -165,7 +165,7 @@ export default function UsuariosScreen() {
     if (typeof rol === 'object') rol = rol?.value || 'portero';
     switch (rol) {
       case 'admin': return 'ADMINISTRADOR';
-      case 'dev': return 'DEVELOPER';
+      case 'dev': return 'DESARROLLADOR';
       default: return 'PORTERÍA';
     }
   };

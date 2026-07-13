@@ -38,9 +38,10 @@ export default function VerificacionScreen() {
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const searchTimeout = useRef(null);
-  const { width } = useWindowDimensions();
+  const { width, height } = useWindowDimensions();
   const isTablet = width >= 600;
   const contentMaxWidth = isTablet ? 600 : undefined;
+  const hasActiveForm = !!(personData || isVisitor);
 
   const handleCedulaChange = (value) => {
     setCedula(value);
@@ -166,16 +167,22 @@ export default function VerificacionScreen() {
           contentContainerStyle={[styles.scroll, isTablet && { alignItems: 'center' }]}
           keyboardShouldPersistTaps="handled"
         >
-          {/* Header Institucional */}
-          <View style={[styles.premiumHeader, isTablet && { width: '100%' }]}>
-             <View style={styles.headerBadge}>
-                <Ionicons name="shield-checkmark" size={32} color="#fff" />
-             </View>
-             <Text style={styles.headerTitle}>CONTROL DE ACCESO</Text>
-             <Text style={styles.headerSubtitle}>ALCALDÍA DE GUANTA</Text>
-          </View>
+          {/* Header Institucional - Colapsa dinámicamente si hay un formulario o tarjeta activa */}
+          {!hasActiveForm && (
+            <View style={[styles.premiumHeader, isTablet && { width: '100%' }]}>
+               <View style={styles.headerBadge}>
+                  <Ionicons name="shield-checkmark" size={32} color="#fff" />
+               </View>
+               <Text style={styles.headerTitle}>CONTROL DE ACCESO</Text>
+               <Text style={styles.headerSubtitle}>ALCALDÍA DE GUANTA</Text>
+            </View>
+          )}
 
-          <View style={[styles.content, isTablet && { maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }]}>
+          <View style={[
+            styles.content,
+            hasActiveForm && styles.contentActiveForm,
+            isTablet && { maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }
+          ]}>
             {/* Mensaje de estado */}
             {message && (
               <View
@@ -186,7 +193,7 @@ export default function VerificacionScreen() {
               >
                 <Ionicons
                   name={message.type === 'success' ? 'checkmark-circle' : 'alert-circle'}
-                  size={24}
+                  size={20}
                   color={message.type === 'success' ? '#10b981' : '#f43f5e'}
                 />
                 <Text
@@ -201,12 +208,12 @@ export default function VerificacionScreen() {
             )}
 
             {/* Campo de cédula + QR */}
-            <View style={styles.searchSection}>
-              <Text style={styles.searchLabel}>IDENTIFICACIÓN DEL CIUDADANO</Text>
-              <View style={styles.searchWrapper}>
-                <Ionicons name="search" size={28} color={ORANGE} style={styles.searchIcon} />
+            <View style={[styles.searchSection, hasActiveForm && styles.searchSectionActive]}>
+              <Text style={[styles.searchLabel, hasActiveForm && styles.searchLabelActive]}>IDENTIFICACIÓN DEL CIUDADANO</Text>
+              <View style={[styles.searchWrapper, hasActiveForm && styles.searchWrapperActive]}>
+                <Ionicons name="search" size={hasActiveForm ? 20 : 28} color={ORANGE} style={[styles.searchIcon, hasActiveForm && styles.searchIconActive]} />
                 <TextInput
-                  style={styles.searchInput}
+                  style={[styles.searchInput, hasActiveForm && styles.searchInputActive]}
                   placeholder="CÉDULA"
                   placeholderTextColor="#d1d5db"
                   value={cedula}
@@ -218,27 +225,27 @@ export default function VerificacionScreen() {
                   <ActivityIndicator color={ORANGE} style={{ marginRight: 8 }} />
                 )}
                 <TouchableOpacity
-                  style={styles.qrButton}
+                  style={[styles.qrButton, hasActiveForm && styles.qrButtonActive]}
                   onPress={abrirScanner}
                   activeOpacity={0.7}
                 >
-                  <Ionicons name="qr-code" size={24} color="#fff" />
+                  <Ionicons name="qr-code" size={hasActiveForm ? 18 : 24} color="#fff" />
                 </TouchableOpacity>
               </View>
             </View>
 
             {/* Ficha de Personal */}
             {personData && (
-              <View style={styles.personalCard}>
-                <View style={styles.personalCardHeader}>
-                  <View style={styles.avatarCircle}>
-                    <Ionicons name="person" size={48} color={ORANGE} />
+              <View style={[styles.personalCard, !isTablet && styles.personalCardCompact]}>
+                <View style={[styles.personalCardHeader, !isTablet && styles.personalCardHeaderCompact]}>
+                  <View style={[styles.avatarCircle, !isTablet && styles.avatarCircleCompact]}>
+                    <Ionicons name="person" size={isTablet ? 48 : 36} color={ORANGE} />
                   </View>
                   <View style={{ flex: 1 }}>
-                    <View style={styles.badgePersonal}>
+                    <View style={[styles.badgePersonal, !isTablet && styles.badgePersonalCompact]}>
                       <Text style={styles.badgePersonalText}>Personal Institucional</Text>
                     </View>
-                    <Text style={styles.personalName}>{personData.nombre}</Text>
+                    <Text style={[styles.personalName, !isTablet && styles.personalNameCompact]}>{personData.nombre}</Text>
                     <View style={styles.personalTags}>
                       <View style={styles.tagOrange}>
                         <Ionicons name="briefcase" size={11} color={ORANGE} />
@@ -249,7 +256,7 @@ export default function VerificacionScreen() {
                 </View>
 
                 <TouchableOpacity
-                  style={[styles.confirmBtn, loading && styles.confirmBtnDisabled]}
+                  style={[styles.confirmBtn, loading && styles.confirmBtnDisabled, !isTablet && styles.confirmBtnCompact]}
                   onPress={handleRegister}
                   disabled={loading}
                   activeOpacity={0.9}
@@ -258,8 +265,8 @@ export default function VerificacionScreen() {
                     <ActivityIndicator color="#fff" />
                   ) : (
                     <>
-                      <Ionicons name="time" size={24} color="#fff" />
-                      <Text style={styles.confirmBtnText}>CONFIRMAR ASISTENCIA</Text>
+                      <Ionicons name="time" size={isTablet ? 24 : 20} color="#fff" />
+                      <Text style={[styles.confirmBtnText, !isTablet && styles.confirmBtnTextCompact]}>CONFIRMAR ASISTENCIA</Text>
                     </>
                   )}
                 </TouchableOpacity>
@@ -268,23 +275,24 @@ export default function VerificacionScreen() {
 
             {/* Formulario Visitante */}
             {isVisitor && (
-              <View style={styles.visitorCard}>
-                <View style={styles.visitorHeader}>
-                  <View style={styles.visitorIconBox}>
-                    <Ionicons name="person-add" size={28} color="#fff" />
+              <View style={[styles.visitorCard, !isTablet && styles.visitorCardCompact]}>
+                <View style={[styles.visitorHeader, !isTablet && styles.visitorHeaderCompact]}>
+                  <View style={[styles.visitorIconBox, !isTablet && styles.visitorIconBoxCompact]}>
+                    <Ionicons name="person-add" size={isTablet ? 28 : 20} color="#fff" />
                   </View>
                   <View>
-                    <Text style={styles.visitorTitle}>Nueva Visita</Text>
-                    <Text style={styles.visitorSubtitle}>REGISTRO DE TRÁMITE EXTERNO</Text>
+                    <Text style={[styles.visitorTitle, !isTablet && styles.visitorTitleCompact]}>Nueva Visita</Text>
+                    <Text style={[styles.visitorSubtitle, !isTablet && styles.visitorSubtitleCompact]}>REGISTRO DE TRÁMITE EXTERNO</Text>
                   </View>
                 </View>
 
-                <View style={styles.visitorFields}>
+                <View style={[styles.visitorFields, !isTablet && styles.visitorFieldsCompact]}>
                   <VisitorField
                     label="NOMBRE COMPLETO DEL VISITANTE"
                     placeholder="NOMBRE Y APELLIDO"
                     value={visitorData.nombre}
                     onChangeText={(v) => setVisitorData({ ...visitorData, nombre: v })}
+                    isTablet={isTablet}
                   />
                   <View style={styles.row}>
                     <View style={{ flex: 1 }}>
@@ -294,6 +302,7 @@ export default function VerificacionScreen() {
                         value={visitorData.telefono}
                         onChangeText={(v) => setVisitorData({ ...visitorData, telefono: v })}
                         keyboardType="phone-pad"
+                        isTablet={isTablet}
                       />
                     </View>
                     <View style={{ width: 12 }} />
@@ -303,6 +312,7 @@ export default function VerificacionScreen() {
                         placeholder="ENTIDAD"
                         value={visitorData.ente}
                         onChangeText={(v) => setVisitorData({ ...visitorData, ente: v })}
+                        isTablet={isTablet}
                       />
                     </View>
                   </View>
@@ -313,6 +323,7 @@ export default function VerificacionScreen() {
                         placeholder="DESTINO"
                         value={visitorData.piso}
                         onChangeText={(v) => setVisitorData({ ...visitorData, piso: v })}
+                        isTablet={isTablet}
                       />
                     </View>
                     <View style={{ width: 12 }} />
@@ -322,6 +333,7 @@ export default function VerificacionScreen() {
                         placeholder="MOTIVO"
                         value={visitorData.motivo}
                         onChangeText={(v) => setVisitorData({ ...visitorData, motivo: v })}
+                        isTablet={isTablet}
                       />
                     </View>
                   </View>
@@ -331,6 +343,7 @@ export default function VerificacionScreen() {
                   style={[
                     styles.visitorBtn,
                     (!visitorData.nombre.trim() || loading) && styles.visitorBtnDisabled,
+                    !isTablet && styles.visitorBtnCompact,
                   ]}
                   onPress={handleRegister}
                   disabled={!visitorData.nombre.trim() || loading}
@@ -339,7 +352,7 @@ export default function VerificacionScreen() {
                   {loading ? (
                     <ActivityIndicator color="#fff" />
                   ) : (
-                    <Text style={styles.visitorBtnText}>REGISTRAR VISITA</Text>
+                    <Text style={[styles.visitorBtnText, !isTablet && styles.visitorBtnTextCompact]}>REGISTRAR VISITA</Text>
                   )}
                 </TouchableOpacity>
               </View>
@@ -361,12 +374,12 @@ export default function VerificacionScreen() {
   );
 }
 
-function VisitorField({ label, placeholder, value, onChangeText, keyboardType }) {
+function VisitorField({ label, placeholder, value, onChangeText, keyboardType, isTablet }) {
   return (
     <View style={vfStyles.group}>
-      <Text style={vfStyles.label}>{label}</Text>
+      <Text style={[vfStyles.label, !isTablet && vfStyles.labelCompact]}>{label}</Text>
       <TextInput
-        style={vfStyles.input}
+        style={[vfStyles.input, !isTablet && vfStyles.inputCompact]}
         placeholder={placeholder}
         placeholderTextColor="#d1d5db"
         value={value}
@@ -378,26 +391,37 @@ function VisitorField({ label, placeholder, value, onChangeText, keyboardType })
 }
 
 const vfStyles = StyleSheet.create({
-  group: { marginBottom: 16 },
+  group: { marginBottom: 10 },
   label: {
     fontSize: 9,
     fontWeight: '900',
-    color: AMBER,
+    color: ORANGE,
     letterSpacing: 1.5,
     marginBottom: 8,
     marginLeft: 4,
     textTransform: 'uppercase',
   },
+  labelCompact: {
+    fontSize: 8,
+    marginBottom: 4,
+  },
   input: {
     backgroundColor: 'rgba(255,255,255,0.5)',
     borderWidth: 2,
-    borderColor: 'rgba(255,251,235,0.6)',
+    borderColor: 'rgba(0,159,161,0.2)',
     borderRadius: 16,
     paddingHorizontal: 16,
     paddingVertical: 14,
     fontSize: 14,
     fontWeight: '800',
     color: '#111',
+  },
+  inputCompact: {
+    borderRadius: 12,
+    paddingHorizontal: 12,
+    paddingVertical: 10,
+    fontSize: 12,
+    borderWidth: 1.5,
   },
 });
 
@@ -443,6 +467,13 @@ const styles = StyleSheet.create({
     padding: 24,
     paddingTop: 40,
   },
+  contentActiveForm: {
+    marginTop: 0,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    paddingTop: 16,
+    paddingHorizontal: 16,
+  },
   messageBox: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -461,6 +492,7 @@ const styles = StyleSheet.create({
   messageError: { backgroundColor: '#fff1f2', borderColor: '#fecdd3' },
   messageText: { fontSize: 13, fontWeight: '900', textTransform: 'uppercase', flex: 1, letterSpacing: -0.2 },
   searchSection: { marginBottom: 32 },
+  searchSectionActive: { marginBottom: 16 },
   searchLabel: {
     fontSize: 10,
     fontWeight: '900',
@@ -469,6 +501,7 @@ const styles = StyleSheet.create({
     marginBottom: 12,
     marginLeft: 4,
   },
+  searchLabelActive: { marginBottom: 6, fontSize: 9 },
   searchWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -482,7 +515,9 @@ const styles = StyleSheet.create({
     shadowRadius: 20,
     elevation: 4,
   },
+  searchWrapperActive: { borderRadius: 16 },
   searchIcon: { marginLeft: 20, marginRight: 12 },
+  searchIconActive: { marginLeft: 14, marginRight: 8 },
   searchInput: {
     flex: 1,
     paddingVertical: 24,
@@ -491,6 +526,7 @@ const styles = StyleSheet.create({
     color: '#111',
     letterSpacing: -1.5,
   },
+  searchInputActive: { paddingVertical: 12, fontSize: 22 },
   qrButton: {
     backgroundColor: ORANGE,
     borderRadius: 16,
@@ -502,6 +538,7 @@ const styles = StyleSheet.create({
     shadowRadius: 8,
     elevation: 6,
   },
+  qrButtonActive: { borderRadius: 10, padding: 10, marginRight: 6 },
   // Personal card
   personalCard: {
     backgroundColor: 'rgba(255,255,255,0.65)',
@@ -516,7 +553,9 @@ const styles = StyleSheet.create({
     elevation: 10,
     marginBottom: 24,
   },
+  personalCardCompact: { borderRadius: 24, padding: 16, marginBottom: 12, borderWidth: 1.5 },
   personalCardHeader: { flexDirection: 'row', alignItems: 'center', gap: 20, marginBottom: 24 },
+  personalCardHeaderCompact: { gap: 14, marginBottom: 16 },
   avatarCircle: {
     backgroundColor: 'rgba(255,255,255,0.65)',
     borderRadius: 40,
@@ -529,6 +568,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.6)',
   },
+  avatarCircleCompact: { borderRadius: 28, padding: 10 },
   badgePersonal: {
     backgroundColor: ORANGE,
     borderRadius: 20,
@@ -541,8 +581,10 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.3,
     shadowRadius: 8,
   },
+  badgePersonalCompact: { marginBottom: 4 },
   badgePersonalText: { color: '#fff', fontSize: 10, fontWeight: '900', letterSpacing: 1, textTransform: 'uppercase' },
   personalName: { fontSize: 28, fontWeight: '900', color: '#111', letterSpacing: -1, marginBottom: 10 },
+  personalNameCompact: { fontSize: 22, marginBottom: 6, letterSpacing: -0.5 },
   personalTags: { flexDirection: 'row', gap: 8 },
   tagOrange: {
     flexDirection: 'row',
@@ -570,50 +612,60 @@ const styles = StyleSheet.create({
     shadowRadius: 15,
     elevation: 8,
   },
+  confirmBtnCompact: { borderRadius: 14, paddingVertical: 14, gap: 8 },
   confirmBtnDisabled: { backgroundColor: '#d1d5db', shadowOpacity: 0, elevation: 0 },
   confirmBtnText: { color: '#fff', fontSize: 16, fontWeight: '900', letterSpacing: 1.5 },
+  confirmBtnTextCompact: { fontSize: 14, letterSpacing: 1 },
   // Visitor card
   visitorCard: {
-    backgroundColor: 'rgba(255,251,235,0.65)',
+    backgroundColor: 'rgba(0,159,161,0.04)',
     borderRadius: 32,
     padding: 24,
     borderWidth: 2,
-    borderColor: 'rgba(255,251,235,0.6)',
-    shadowColor: AMBER,
+    borderColor: 'rgba(0,159,161,0.15)',
+    shadowColor: ORANGE,
     shadowOffset: { width: 0, height: 15 },
     shadowOpacity: 0.08,
     shadowRadius: 30,
     elevation: 5,
     marginBottom: 24,
   },
+  visitorCardCompact: { borderRadius: 24, padding: 16, marginBottom: 12, borderWidth: 1.5 },
   visitorHeader: { flexDirection: 'row', alignItems: 'center', gap: 16, marginBottom: 24 },
+  visitorHeaderCompact: { gap: 10, marginBottom: 16 },
   visitorIconBox: {
-    backgroundColor: AMBER,
+    backgroundColor: ORANGE,
     borderRadius: 20,
     padding: 16,
-    shadowColor: AMBER,
+    shadowColor: ORANGE,
     shadowOffset: { width: 0, height: 8 },
     shadowOpacity: 0.3,
     shadowRadius: 15,
     elevation: 5,
   },
+  visitorIconBoxCompact: { borderRadius: 14, padding: 10 },
   visitorTitle: { fontSize: 24, fontWeight: '900', color: '#1f2937', letterSpacing: -0.8 },
-  visitorSubtitle: { fontSize: 10, fontWeight: '900', color: AMBER, letterSpacing: 1.5, marginTop: 4, textTransform: 'uppercase' },
+  visitorTitleCompact: { fontSize: 18 },
+  visitorSubtitle: { fontSize: 10, fontWeight: '900', color: ORANGE, letterSpacing: 1.5, marginTop: 4, textTransform: 'uppercase' },
+  visitorSubtitleCompact: { fontSize: 8, marginTop: 2 },
   visitorFields: { marginBottom: 24 },
+  visitorFieldsCompact: { marginBottom: 12 },
   row: { flexDirection: 'row' },
   visitorBtn: {
-    backgroundColor: AMBER,
+    backgroundColor: ORANGE,
     borderRadius: 20,
     paddingVertical: 20,
     alignItems: 'center',
-    shadowColor: AMBER,
+    shadowColor: ORANGE,
     shadowOffset: { width: 0, height: 10 },
     shadowOpacity: 0.3,
     shadowRadius: 15,
     elevation: 8,
   },
+  visitorBtnCompact: { borderRadius: 14, paddingVertical: 14 },
   visitorBtnDisabled: { backgroundColor: '#d1d5db', shadowOpacity: 0, elevation: 0 },
   visitorBtnText: { color: '#fff', fontSize: 16, fontWeight: '900', letterSpacing: 2 },
+  visitorBtnTextCompact: { fontSize: 14, letterSpacing: 1.5 },
   // Empty state
   emptyState: { alignItems: 'center', paddingTop: 60, gap: 20 },
   emptyIconCircle: {

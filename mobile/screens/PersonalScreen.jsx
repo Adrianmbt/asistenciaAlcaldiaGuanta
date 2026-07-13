@@ -76,14 +76,14 @@ export default function PersonalScreen() {
   };
 
   const renderItem = ({ item }) => (
-    <View style={styles.row}>
-      <View style={[styles.avatar, { backgroundColor: 'rgba(0,159,161,0.08)' }]}>
-        <Ionicons name="person" size={24} color={ORANGE} />
+    <View style={[styles.row, !isTablet && styles.rowCompact]}>
+      <View style={[styles.avatar, { backgroundColor: 'rgba(0,159,161,0.08)' }, !isTablet && styles.avatarCompact]}>
+        <Ionicons name="person" size={isTablet ? 24 : 18} color={ORANGE} />
       </View>
       <View style={styles.rowInfo}>
         <Text style={styles.rowCedula}>V-{item.cedula}</Text>
-        <Text style={styles.rowName}>{item.nombres} {item.apellidos}</Text>
-        <View style={styles.rowMeta}>
+        <Text style={[styles.rowName, !isTablet && styles.rowNameCompact]}>{item.nombres} {item.apellidos}</Text>
+        <View style={[styles.rowMeta, !isTablet && styles.rowMetaCompact]}>
           <View style={styles.badgeOrange}>
             <Text style={styles.badgeText}>{getEnteName(item.ente_id) || 'ALCALDÍA'}</Text>
           </View>
@@ -107,7 +107,7 @@ export default function PersonalScreen() {
       pages.push(
         <TouchableOpacity
           key={i}
-          style={[styles.pageBtn, currentPage === i && styles.pageBtnActive]}
+          style={[styles.pageBtn, currentPage === i && styles.pageBtnActive, !isTablet && styles.pageBtnCompact]}
           onPress={() => setCurrentPage(i)}
         >
           <Text style={[styles.pageBtnText, currentPage === i && styles.pageBtnTextActive]}>{i}</Text>
@@ -116,25 +116,25 @@ export default function PersonalScreen() {
     }
 
     return (
-      <View style={styles.paginationContainer}>
+      <View style={[styles.paginationContainer, !isTablet && styles.paginationContainerCompact]}>
         <Text style={styles.paginationInfo}>
-          Mostrando {((currentPage - 1) * ITEMS_PER_PAGE) + 1} - {Math.min(currentPage * ITEMS_PER_PAGE, filtered.length)} de {filtered.length}
+          {isTablet ? 'Mostrando' : ''} {((currentPage - 1) * ITEMS_PER_PAGE) + 1}-{Math.min(currentPage * ITEMS_PER_PAGE, filtered.length)} de {filtered.length}
         </Text>
         <View style={styles.paginationControls}>
           <TouchableOpacity
-            style={[styles.navBtn, currentPage === 1 && styles.navBtnDisabled]}
+            style={[styles.navBtn, currentPage === 1 && styles.navBtnDisabled, !isTablet && styles.navBtnCompact]}
             onPress={() => setCurrentPage(p => Math.max(1, p - 1))}
             disabled={currentPage === 1}
           >
-            <Ionicons name="chevron-back" size={18} color={currentPage === 1 ? '#d1d5db' : '#6b7280'} />
+            <Ionicons name="chevron-back" size={isTablet ? 18 : 14} color={currentPage === 1 ? '#d1d5db' : '#6b7280'} />
           </TouchableOpacity>
           {pages}
           <TouchableOpacity
-            style={[styles.navBtn, currentPage === totalPages && styles.navBtnDisabled]}
+            style={[styles.navBtn, currentPage === totalPages && styles.navBtnDisabled, !isTablet && styles.navBtnCompact]}
             onPress={() => setCurrentPage(p => Math.min(totalPages, p + 1))}
             disabled={currentPage === totalPages}
           >
-            <Ionicons name="chevron-forward" size={18} color={currentPage === totalPages ? '#d1d5db' : '#6b7280'} />
+            <Ionicons name="chevron-forward" size={isTablet ? 18 : 14} color={currentPage === totalPages ? '#d1d5db' : '#6b7280'} />
           </TouchableOpacity>
         </View>
       </View>
@@ -143,11 +143,11 @@ export default function PersonalScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
-      <View style={[styles.toolbar, isTablet && { alignItems: 'center' }]}>
+      <View style={[styles.toolbar, !isTablet && styles.toolbarCompact, isTablet && { alignItems: 'center' }]}>
         <View style={[styles.searchWrapper, isTablet && { maxWidth: contentMaxWidth, width: '100%' }]}>
           <Ionicons name="search" size={20} color={ORANGE} style={{ marginRight: 10 }} />
           <TextInput
-            style={styles.searchInput}
+            style={[styles.searchInput, !isTablet && styles.searchInputCompact]}
             placeholder="Buscar por cédula, nombre..."
             placeholderTextColor="#d1d5db"
             value={filter}
@@ -167,7 +167,7 @@ export default function PersonalScreen() {
           data={paginatedData}
           keyExtractor={(item) => String(item.id)}
           renderItem={renderItem}
-          contentContainerStyle={[styles.list, isTablet && { maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }]}
+          contentContainerStyle={[styles.list, !isTablet && styles.listCompact, isTablet && { maxWidth: contentMaxWidth, width: '100%', alignSelf: 'center' }]}
           ListFooterComponent={renderPagination}
           ListEmptyComponent={
             <View style={styles.emptyState}>
@@ -195,6 +195,10 @@ const styles = StyleSheet.create({
     shadowRadius: 10,
     elevation: 3,
   },
+  toolbarCompact: {
+    padding: 12,
+    gap: 8,
+  },
   searchWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -205,6 +209,7 @@ const styles = StyleSheet.create({
     borderColor: 'rgba(255,255,255,0.6)',
   },
   searchInput: { flex: 1, paddingVertical: 14, fontSize: 15, fontWeight: '700', color: '#111' },
+  searchInputCompact: { paddingVertical: 10, fontSize: 14 },
   toolbarRow: { flexDirection: 'row', alignItems: 'center', gap: 10 },
   countBadge: {
     backgroundColor: 'rgba(0,159,161,0.08)',
@@ -219,6 +224,7 @@ const styles = StyleSheet.create({
   countText: { fontSize: 12, fontWeight: '900', color: ORANGE },
   countLabel: { fontSize: 11, fontWeight: '800', color: '#9ca3af', flex: 1 },
   list: { padding: 20, gap: 14, paddingBottom: 20 },
+  listCompact: { padding: 12, gap: 10, paddingBottom: 16 },
   row: {
     flexDirection: 'row',
     alignItems: 'center',
@@ -234,11 +240,19 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'rgba(255,255,255,0.6)',
   },
+  rowCompact: {
+    borderRadius: 18,
+    padding: 12,
+    gap: 10,
+  },
   avatar: { width: 54, height: 54, borderRadius: 18, alignItems: 'center', justifyContent: 'center' },
+  avatarCompact: { width: 42, height: 42, borderRadius: 14 },
   rowInfo: { flex: 1 },
   rowCedula: { fontSize: 12, fontWeight: '900', color: '#9ca3af', letterSpacing: 1 },
   rowName: { fontSize: 16, fontWeight: '900', color: '#111', marginTop: 2, letterSpacing: -0.5 },
+  rowNameCompact: { fontSize: 14, marginTop: 1 },
   rowMeta: { flexDirection: 'row', alignItems: 'center', gap: 8, marginTop: 8 },
+  rowMetaCompact: { marginTop: 4, gap: 6 },
   badgeOrange: { backgroundColor: 'rgba(0,159,161,0.08)', paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
   badgeText: { fontSize: 9, fontWeight: '900', color: ORANGE, textTransform: 'uppercase' },
   cargoText: { fontSize: 10, fontWeight: '700', color: '#9ca3af', textTransform: 'uppercase' },
@@ -259,6 +273,10 @@ const styles = StyleSheet.create({
     borderTopWidth: 1, borderTopColor: 'rgba(255,255,255,0.4)',
     flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between',
   },
+  paginationContainerCompact: {
+    paddingVertical: 10,
+    paddingHorizontal: 4,
+  },
   paginationInfo: { fontSize: 11, fontWeight: '700', color: '#9ca3af' },
   paginationControls: { flexDirection: 'row', alignItems: 'center', gap: 6 },
   navBtn: {
@@ -266,11 +284,17 @@ const styles = StyleSheet.create({
     alignItems: 'center', justifyContent: 'center',
     backgroundColor: 'rgba(255,255,255,0.5)',
   },
+  navBtnCompact: {
+    width: 28, height: 28, borderRadius: 6,
+  },
   navBtnDisabled: { opacity: 0.4 },
   pageBtn: {
     width: 32, height: 32, borderRadius: 8,
     alignItems: 'center', justifyContent: 'center',
     backgroundColor: 'rgba(255,255,255,0.5)',
+  },
+  pageBtnCompact: {
+    width: 28, height: 28, borderRadius: 6,
   },
   pageBtnActive: {
     backgroundColor: ORANGE,
