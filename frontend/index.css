@@ -52,3 +52,103 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #007A7C;
 }
+
+/* --- ESTILOS FUTURISTAS Y SCI-FI --- */
+
+@keyframes spin-slow {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes spin-reverse-slow {
+  from {
+    transform: rotate(360deg);
+  }
+  to {
+    transform: rotate(0deg);
+  }
+}
+
+@keyframes cyber-pulse {
+  0%, 100% {
+    opacity: 0.2;
+    transform: scale(0.98);
+  }
+  50% {
+    opacity: 0.6;
+    transform: scale(1.02);
+  }
+}
+
+@keyframes scanline {
+  0% {
+    transform: translateY(-100%);
+  }
+  100% {
+    transform: translateY(100%);
+  }
+}
+
+@keyframes led-blink {
+  0%, 100% {
+    opacity: 0.3;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 20s linear infinite;
+}
+
+.animate-spin-reverse-slow {
+  animation: spin-reverse-slow 25s linear infinite;
+}
+
+.animate-cyber-pulse {
+  animation: cyber-pulse 4s ease-in-out infinite;
+}
+
+.animate-led-blink {
+  animation: led-blink 1.5s infinite;
+}
+
+/* Efecto de cuadrícula cibernética */
+.bg-cyber-grid {
+  background-size: 30px 30px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 180, 184, 0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 180, 184, 0.04) 1px, transparent 1px);
+}
+
+/* Línea de escaneo láser */
+.laser-scanner {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, #00B4B8, transparent);
+  box-shadow: 0 0 8px #00B4B8;
+  animation: scanline 6s linear infinite;
+  pointer-events: none;
+}
+
+/* Brillo neón para texto y contenedores */
+.shadow-neon-cyan {
+  box-shadow: 0 0 15px rgba(0, 180, 184, 0.25);
+}
+
+.shadow-neon-cyan-hover:hover {
+  box-shadow: 0 0 25px rgba(0, 180, 184, 0.45);
+}
+
+.text-neon-cyan {
+  text-shadow: 0 0 8px rgba(0, 180, 184, 0.6);
+}
+

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import {
   View,
   Text,
@@ -6,18 +6,23 @@ import {
   TouchableOpacity,
   StyleSheet,
   ActivityIndicator,
-  KeyboardAvoidingView,
   Platform,
-  ScrollView,
   Image,
-  useWindowDimensions,
+  Keyboard,
+  StatusBar,
+  Dimensions,
+  KeyboardAvoidingView,
 } from 'react-native';
-import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuth } from '../context/AuthContext';
 
 const ORANGE = '#009fa1';
-const AMBER = '#F59E0B';
+const CYAN = '#00B4B8';
+const TABLET_BREAKPOINT = 600;
+
+const { width: WIN_WIDTH } = Dimensions.get('window');
+const IS_TABLET = WIN_WIDTH >= TABLET_BREAKPOINT;
+const CONTENT_MAX_WIDTH = IS_TABLET ? 480 : undefined;
 
 export default function LoginScreen() {
   const { login } = useAuth();
@@ -26,11 +31,12 @@ export default function LoginScreen() {
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
-  const { width } = useWindowDimensions();
-  const isTablet = width >= 600;
-  const contentMaxWidth = isTablet ? 480 : undefined;
+
+  const isTablet = useRef(IS_TABLET).current;
+  const contentMaxWidth = useRef(CONTENT_MAX_WIDTH).current;
 
   const handleLogin = async () => {
+    Keyboard.dismiss();
     if (!username.trim() || !password.trim()) {
       setError('INGRESE USUARIO Y CONTRASEÑA');
       return;
@@ -46,329 +52,398 @@ export default function LoginScreen() {
     }
   };
 
+  const centerWrapStyle = isTablet
+    ? { maxWidth: contentMaxWidth, width: '100%' }
+    : undefined;
+
+  const cardStyle = isTablet ? { borderRadius: 36 } : undefined;
+
   return (
-    <SafeAreaView style={styles.safe}>
+    <View style={styles.safe}>
+      <StatusBar barStyle="light-content" backgroundColor="#070b19" />
+      <View style={styles.glowTop} pointerEvents="none" />
+      <View style={styles.glowBottom} pointerEvents="none" />
+
       <KeyboardAvoidingView
-        behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+        behavior={Platform.OS === 'ios' ? 'padding' : 'padding'}
         style={{ flex: 1 }}
       >
-        <ScrollView
-          contentContainerStyle={[styles.scroll, isTablet && { alignItems: 'center' }]}
-          keyboardShouldPersistTaps="handled"
-        >
-          {/* Header Institucional Premium */}
-          <View style={[styles.header, isTablet && { maxWidth: contentMaxWidth, width: '100%' }]}>
-            <View style={styles.logoContainer}>
-              <Image 
-                source={require('../assets/logo_guanta.webp')} 
-                style={styles.logo}
-                resizeMode="cover"
-              />
-              <View style={styles.logoRing} />
-            </View>
-            <View style={styles.headerTextContainer}>
-              <Text style={styles.headerTitle}>GUANTA</Text>
-              <Text style={styles.headerSubtitle}>CONTROL INSTITUCIONAL</Text>
-            </View>
-          </View>
-
-          {/* Formulario Elevado */}
-          <View style={[styles.card, isTablet && { maxWidth: contentMaxWidth, width: '100%', borderRadius: 48 }]}>
-            <View style={styles.welcomeSection}>
-              <Text style={styles.welcomeTitle}>Bienvenido, Oficial</Text>
-              <Text style={styles.welcomeSubtitle}>
-                Ingrese sus credenciales para iniciar la jornada de seguridad corporativa.
-              </Text>
+        <View style={styles.container}>
+          <View style={[styles.centerWrap, centerWrapStyle]}>
+            <View style={styles.header}>
+              <View style={styles.logoContainer}>
+                <View style={styles.logoRing} />
+                <Image
+                  source={require('../assets/logo_guanta.webp')}
+                  style={styles.logo}
+                  resizeMode="contain"
+                />
+              </View>
+              <View style={styles.headerTextContainer}>
+                <Text style={styles.headerTitle}>GUANTA</Text>
+                <Text style={styles.headerSubtitle}>CONTROL INSTITUCIONAL</Text>
+              </View>
             </View>
 
-            {error && (
-              <View style={styles.errorBox}>
-                <View style={styles.errorIconCircle}>
-                  <Ionicons name="alert-circle" size={16} color="#fff" />
+            <View style={[styles.card, cardStyle]}>
+              <View style={styles.cardHeaderAccent} />
+
+              <View style={styles.welcomeSection}>
+                <View style={styles.statusIndicatorContainer}>
+                  <View style={styles.statusDot} />
+                  <Text style={styles.statusText}>CONEXIÓN CIFRADA ACTIVA</Text>
                 </View>
-                <Text style={styles.errorText}>{error}</Text>
+                <Text style={styles.welcomeTitle}>Bienvenido, Oficial</Text>
+                <Text style={styles.welcomeSubtitle}>
+                  Ingrese sus credenciales para iniciar la jornada de seguridad corporativa.
+                </Text>
               </View>
-            )}
 
-            {/* Campo Usuario */}
-            <View style={styles.fieldGroup}>
-              <Text style={styles.label}>USUARIO DEL SISTEMA</Text>
-              <View style={styles.inputWrapper}>
-                <Ionicons
-                  name="person"
-                  size={20}
-                  color={ORANGE}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={styles.input}
-                  placeholder="IDENTIFICADOR"
-                  placeholderTextColor="#d1d5db"
-                  value={username}
-                  onChangeText={setUsername}
-                  autoCapitalize="none"
-                  autoCorrect={false}
-                  returnKeyType="next"
-                />
-              </View>
-            </View>
-
-            {/* Campo Contraseña */}
-            <View style={styles.fieldGroup}>
-              <Text style={styles.label}>CONTRASEÑA SEGURA</Text>
-              <View style={styles.inputWrapper}>
-                <Ionicons
-                  name="lock-closed"
-                  size={20}
-                  color={ORANGE}
-                  style={styles.inputIcon}
-                />
-                <TextInput
-                  style={[styles.input, { flex: 1 }]}
-                  placeholder="••••••••"
-                  placeholderTextColor="#d1d5db"
-                  value={password}
-                  onChangeText={setPassword}
-                  secureTextEntry={!showPassword}
-                  returnKeyType="done"
-                  onSubmitEditing={handleLogin}
-                />
-                <TouchableOpacity
-                  onPress={() => setShowPassword(!showPassword)}
-                  style={styles.eyeBtn}
-                >
-                  <Ionicons
-                    name={showPassword ? 'eye-off' : 'eye'}
-                    size={20}
-                    color="#d1d5db"
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-
-            {/* Botón Login Premium */}
-            <TouchableOpacity
-              style={[styles.loginBtn, loading && styles.loginBtnDisabled]}
-              onPress={handleLogin}
-              disabled={loading}
-              activeOpacity={0.9}
-            >
-              {loading ? (
-                <ActivityIndicator color="#fff" />
-              ) : (
-                <>
-                  <Text style={styles.loginBtnText}>AUTENTICAR ACCESO</Text>
-                  <Ionicons name="arrow-forward" size={20} color="#fff" />
-                </>
+              {error && (
+                <View style={styles.errorBox}>
+                  <View style={styles.errorIconCircle}>
+                    <Ionicons name="alert-circle" size={14} color="#fff" />
+                  </View>
+                  <Text style={styles.errorText}>{error}</Text>
+                </View>
               )}
-            </TouchableOpacity>
 
-            <View style={styles.footerContainer}>
-              <View style={styles.footerLine} />
-              <Text style={styles.footer}>
-                Soporte: sistemas@guanta.gob.ve
-              </Text>
-              <View style={styles.footerLine} />
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>USUARIO DEL SISTEMA</Text>
+                <View style={styles.inputWrapper}>
+                  <Ionicons
+                    name="person"
+                    size={18}
+                    color="#64748b"
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="IDENTIFICADOR"
+                    placeholderTextColor="#475569"
+                    value={username}
+                    onChangeText={setUsername}
+                    autoCapitalize="none"
+                    autoCorrect={false}
+                    returnKeyType="next"
+                    blurOnSubmit={false}
+                  />
+                </View>
+              </View>
+
+              <View style={styles.fieldGroup}>
+                <Text style={styles.label}>CONTRASEÑA SEGURA</Text>
+                <View style={styles.inputWrapper}>
+                  <Ionicons
+                    name="lock-closed"
+                    size={18}
+                    color="#64748b"
+                    style={styles.inputIcon}
+                  />
+                  <TextInput
+                    style={styles.input}
+                    placeholder="••••••••"
+                    placeholderTextColor="#475569"
+                    value={password}
+                    onChangeText={setPassword}
+                    secureTextEntry={!showPassword}
+                    returnKeyType="done"
+                    onSubmitEditing={handleLogin}
+                  />
+                  <TouchableOpacity
+                    onPress={() => setShowPassword(!showPassword)}
+                    style={styles.eyeBtn}
+                    activeOpacity={0.7}
+                  >
+                    <Ionicons
+                      name={showPassword ? 'eye-off' : 'eye'}
+                      size={18}
+                      color="#64748b"
+                    />
+                  </TouchableOpacity>
+                </View>
+              </View>
+
+              <TouchableOpacity
+                style={[styles.loginBtn, loading && styles.loginBtnDisabled]}
+                onPress={handleLogin}
+                disabled={loading}
+                activeOpacity={0.8}
+              >
+                {loading ? (
+                  <ActivityIndicator color="#fff" />
+                ) : (
+                  <>
+                    <Text style={styles.loginBtnText}>AUTENTICAR ACCESO</Text>
+                    <Ionicons name="arrow-forward" size={18} color="#fff" />
+                  </>
+                )}
+              </TouchableOpacity>
+
+              <View style={styles.footerContainer}>
+                <View style={styles.footerLine} />
+                <Text style={styles.footer}>
+                  Soporte: sistemas@guanta.gob.ve
+                </Text>
+                <View style={styles.footerLine} />
+              </View>
             </View>
           </View>
-        </ScrollView>
+        </View>
       </KeyboardAvoidingView>
-    </SafeAreaView>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
   safe: {
     flex: 1,
-    backgroundColor: '#FFF7ED',
+    backgroundColor: '#070b19',
   },
-  scroll: {
-    flexGrow: 1,
+  glowTop: {
+    position: 'absolute',
+    top: -100,
+    left: -100,
+    width: 250,
+    height: 250,
+    borderRadius: 125,
+    backgroundColor: 'rgba(0, 180, 184, 0.08)',
+  },
+  glowBottom: {
+    position: 'absolute',
+    bottom: -150,
+    right: -150,
+    width: 300,
+    height: 300,
+    borderRadius: 150,
+    backgroundColor: 'rgba(0, 122, 124, 0.08)',
+  },
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 24,
+    paddingBottom: 40,
+  },
+  centerWrap: {
+    alignSelf: 'center',
+    width: '100%',
   },
   header: {
-    paddingVertical: 60,
+    paddingBottom: 24,
     alignItems: 'center',
-    gap: 20,
+    gap: 12,
   },
   logoContainer: {
     position: 'relative',
-    width: 100,
-    height: 100,
+    width: 80,
+    height: 80,
     justifyContent: 'center',
     alignItems: 'center',
   },
   logo: {
-    width: 90,
-    height: 90,
-    borderRadius: 45,
+    width: 64,
+    height: 64,
     zIndex: 10,
   },
   logoRing: {
     position: 'absolute',
-    width: 100,
-    height: 100,
-    borderRadius: 50,
-    borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.6)',
-    backgroundColor: 'rgba(255,255,255,0.5)',
-    shadowColor: ORANGE,
-    shadowOffset: { width: 0, height: 10 },
-    shadowOpacity: 0.15,
-    shadowRadius: 20,
-    elevation: 10,
+    width: 80,
+    height: 80,
+    borderRadius: 40,
+    borderWidth: 1.5,
+    borderColor: 'rgba(0, 180, 184, 0.25)',
+    backgroundColor: 'rgba(10, 22, 47, 0.65)',
+    shadowColor: CYAN,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.3,
+    shadowRadius: 8,
+    elevation: 3,
   },
   headerTextContainer: {
     alignItems: 'center',
   },
   headerTitle: {
-    fontSize: 32,
+    fontSize: 24,
     fontWeight: '900',
-    color: '#111',
-    letterSpacing: -1.5,
+    color: '#fff',
+    letterSpacing: 1,
     textTransform: 'uppercase',
   },
   headerSubtitle: {
-    fontSize: 10,
-    fontWeight: '900',
-    color: ORANGE,
-    letterSpacing: 4,
+    fontSize: 9,
+    fontWeight: '800',
+    color: CYAN,
+    letterSpacing: 3,
     textTransform: 'uppercase',
-    marginTop: 4,
+    marginTop: 2,
   },
   card: {
-    flex: 1,
-    backgroundColor: 'rgba(255,255,255,0.7)',
-    borderTopLeftRadius: 48,
-    borderTopRightRadius: 48,
-    padding: 32,
-    paddingTop: 48,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: -20 },
-    shadowOpacity: 0.05,
-    shadowRadius: 30,
-    elevation: 20,
+    backgroundColor: 'rgba(10, 18, 36, 0.85)',
+    borderRadius: 24,
+    paddingHorizontal: 24,
+    paddingTop: 24,
+    paddingBottom: 20,
     borderWidth: 1,
-    borderColor: 'rgba(255,255,255,0.6)',
+    borderColor: 'rgba(0, 180, 184, 0.15)',
+    shadowColor: CYAN,
+    shadowOffset: { width: 0, height: -6 },
+    shadowOpacity: 0.1,
+    shadowRadius: 10,
+    elevation: 8,
   },
-  welcomeSection: {
-    marginBottom: 32,
+  cardHeaderAccent: {
+    width: 40,
+    height: 3,
+    backgroundColor: 'rgba(0, 180, 184, 0.4)',
+    borderRadius: 1.5,
+    alignSelf: 'center',
+    marginBottom: 20,
   },
-  welcomeTitle: {
-    fontSize: 30,
-    fontWeight: '900',
-    color: '#111',
-    letterSpacing: -1,
+  statusIndicatorContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
     marginBottom: 8,
   },
+  statusDot: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: '#10b981',
+  },
+  statusText: {
+    fontFamily: Platform.OS === 'ios' ? 'Courier New' : 'monospace',
+    fontSize: 8,
+    color: 'rgba(0, 180, 184, 0.7)',
+    fontWeight: '700',
+    letterSpacing: 1,
+  },
+  welcomeSection: {
+    marginBottom: 20,
+  },
+  welcomeTitle: {
+    fontSize: 22,
+    fontWeight: '800',
+    color: '#fff',
+    letterSpacing: -0.5,
+    marginBottom: 6,
+  },
   welcomeSubtitle: {
-    fontSize: 14,
-    color: '#9ca3af',
-    fontWeight: '600',
-    lineHeight: 20,
+    fontSize: 12,
+    color: '#94a3b8',
+    fontWeight: '500',
+    lineHeight: 16,
   },
   errorBox: {
     flexDirection: 'row',
     alignItems: 'center',
-    gap: 12,
-    backgroundColor: 'rgba(0,159,161,0.08)',
-    borderRadius: 16,
-    padding: 16,
-    marginBottom: 24,
+    gap: 10,
+    backgroundColor: 'rgba(244, 63, 94, 0.1)',
+    borderRadius: 12,
+    padding: 12,
+    marginBottom: 16,
     borderWidth: 1,
-    borderColor: 'rgba(0,159,161,0.15)',
+    borderColor: 'rgba(244, 63, 94, 0.2)',
   },
   errorIconCircle: {
     backgroundColor: '#f43f5e',
-    width: 24,
-    height: 24,
-    borderRadius: 12,
+    width: 20,
+    height: 20,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
   },
   errorText: {
     color: '#f43f5e',
-    fontSize: 11,
-    fontWeight: '900',
+    fontSize: 10,
+    fontWeight: '800',
     flex: 1,
     letterSpacing: 0.5,
   },
   fieldGroup: {
-    marginBottom: 24,
+    marginBottom: 16,
   },
   label: {
-    fontSize: 10,
-    fontWeight: '900',
-    color: '#9ca3af',
-    letterSpacing: 2,
-    marginBottom: 10,
-    marginLeft: 4,
+    fontSize: 9,
+    fontWeight: '800',
+    color: '#64748b',
+    letterSpacing: 1.5,
+    marginBottom: 8,
+    marginLeft: 2,
   },
   inputWrapper: {
     flexDirection: 'row',
     alignItems: 'center',
-    backgroundColor: 'rgba(255,255,255,0.5)',
-    borderRadius: 20,
-    borderWidth: 2,
-    borderColor: 'rgba(255,255,255,0.6)',
-    paddingHorizontal: 16,
+    backgroundColor: 'rgba(7, 11, 25, 0.75)',
+    borderRadius: 12,
+    borderWidth: 1.5,
+    borderColor: 'rgba(0, 180, 184, 0.15)',
+    paddingHorizontal: 12,
+    height: 48,
   },
   inputIcon: {
-    marginRight: 12,
-    opacity: 0.3,
+    marginRight: 10,
   },
   input: {
     flex: 1,
-    paddingVertical: 18,
-    fontSize: 16,
-    fontWeight: '700',
-    color: '#111',
+    height: 48,
+    fontSize: 14,
+    fontWeight: '600',
+    color: '#fff',
+    ...Platform.select({
+      android: {
+        textAlignVertical: 'center',
+        paddingVertical: 0,
+      },
+      ios: {},
+    }),
   },
   eyeBtn: {
-    padding: 8,
+    padding: 6,
   },
   loginBtn: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    gap: 12,
+    gap: 8,
     backgroundColor: ORANGE,
-    borderRadius: 20,
-    paddingVertical: 20,
-    marginTop: 12,
-    shadowColor: ORANGE,
-    shadowOffset: { width: 0, height: 12 },
-    shadowOpacity: 0.4,
-    shadowRadius: 16,
-    elevation: 10,
+    borderRadius: 12,
+    paddingVertical: 14,
+    marginTop: 10,
+    shadowColor: CYAN,
+    shadowOffset: { width: 0, height: 4 },
+    shadowOpacity: 0.2,
+    shadowRadius: 6,
+    elevation: 3,
   },
   loginBtnDisabled: {
-    backgroundColor: '#d1d5db',
+    backgroundColor: '#1e293b',
     shadowOpacity: 0,
     elevation: 0,
   },
   loginBtnText: {
     color: '#fff',
-    fontSize: 16,
-    fontWeight: '900',
-    letterSpacing: 2,
+    fontSize: 14,
+    fontWeight: '800',
+    letterSpacing: 1,
   },
   footerContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
-    marginTop: 40,
-    gap: 10,
+    marginTop: 20,
+    gap: 8,
   },
   footerLine: {
     flex: 1,
     height: 1,
-    backgroundColor: 'rgba(255,255,255,0.6)',
+    backgroundColor: 'rgba(255,255,255,0.05)',
   },
   footer: {
-    color: '#d1d5db',
-    fontSize: 9,
-    fontWeight: '900',
-    letterSpacing: 1.5,
+    color: '#475569',
+    fontSize: 8,
+    fontWeight: '700',
+    letterSpacing: 1,
     textTransform: 'uppercase',
   },
 });
