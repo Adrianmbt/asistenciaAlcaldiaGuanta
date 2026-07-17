@@ -74,7 +74,7 @@ export default function LoginScreen() {
               <View style={styles.logoContainer}>
                 <View style={styles.logoRing} />
                 <Image
-                  source={require('../assets/logo_guanta.webp')}
+                  source={require('../assets/logo_login.png')}
                   style={styles.logo}
                   resizeMode="contain"
                 />

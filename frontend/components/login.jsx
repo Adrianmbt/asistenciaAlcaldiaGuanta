@@ -72,7 +72,7 @@ const Login = ({ onLoginSuccess }) => {
                             <div className="absolute inset-4 rounded-full border border-double border-teal-500/20 animate-spin-reverse-slow"></div>
                             {/* Núcleo central con logo */}
                             <div className="absolute inset-8 rounded-full bg-cyan-950/40 border border-cyan-500/40 shadow-neon-cyan flex items-center justify-center">
-                                <img src="/img/logo_guanta.webp" alt="Logo Guanta" className="w-24 h-16 object-contain drop-shadow-[0_0_8px_rgba(0,180,184,0.5)] transition-transform hover:scale-105 duration-300" />
+                                <img src="/img/logo_login.png" alt="Logo Guanta" className="w-45 h-24 object-contain drop-shadow-[0_0_8px_rgba(0,180,184,0.5)] transition-transform hover:scale-105 duration-300" />
                             </div>
                             {/* Línea de pulso HUD */}
                             <div className="absolute w-full h-[1px] bg-cyan-400/40 shadow-[0_0_8px_#00B4B8] animate-pulse"></div>
@@ -115,7 +115,7 @@ const Login = ({ onLoginSuccess }) => {
                 <div className="w-full md:w-[55%] p-10 md:p-16 flex flex-col justify-center bg-[#070e1c]/45 relative z-10">
                     {/* Header para Mobile */}
                     <div className="mb-8 block md:hidden text-center">
-                        <img src="/img/logo_guanta.webp" alt="Logo Guanta" className="w-24 h-16 mx-auto mb-2 object-contain drop-shadow-[0_0_8px_rgba(0,180,184,0.4)]" />
+                        <img src="/img/logo_login.png" alt="Logo Guanta" className="w-24 h-16 mx-auto mb-2 object-contain drop-shadow-[0_0_8px_rgba(0,180,184,0.4)]" />
                         <h2 className="text-2xl font-black text-white tracking-tighter uppercase leading-none text-neon-cyan">SICA ACCESS</h2>
                     </div>
 

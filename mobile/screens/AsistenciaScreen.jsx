@@ -16,6 +16,7 @@ import { useFocusEffect } from '@react-navigation/native';
 import { Ionicons } from '@expo/vector-icons';
 import { getAsistenciaHoy, marcarSalida, eliminarAsistencia, addWsListener } from '../api/client';
 import CustomAlert from '../components/CustomAlert';
+import ReportesView from './ReportesView';
 
 const ORANGE = '#009fa1';
 const ORANGE_LIGHT = '#FFF7ED';
@@ -27,6 +28,7 @@ export default function AsistenciaScreen() {
   const [refreshing, setRefreshing] = useState(false);
   const [filter, setFilter] = useState('');
   const [filterType, setFilterType] = useState('TODOS');
+  const [viewMode, setViewMode] = useState('registros');
   const { width } = useWindowDimensions();
   const isTablet = width >= 600;
   const contentMaxWidth = isTablet ? 600 : undefined;
@@ -128,8 +130,16 @@ export default function AsistenciaScreen() {
         })
       : null;
 
+    const isActive = !item.hora_salida;
     return (
-      <View style={[styles.row, !isTablet && styles.rowCompact]}>
+      <View style={[styles.row, !isTablet && styles.rowCompact, styles.cyberCornerContainer]}>
+        {/* Corner brackets */}
+        <View style={[styles.cyberCorner, { top: 6, left: 6, borderTopWidth: 1, borderLeftWidth: 1, borderTopLeftRadius: 2 }]} />
+        <View style={[styles.cyberCorner, { top: 6, right: 6, borderTopWidth: 1, borderRightWidth: 1, borderTopRightRadius: 2 }]} />
+        <View style={[styles.cyberCorner, { bottom: 6, left: 6, borderBottomWidth: 1, borderLeftWidth: 1, borderBottomLeftRadius: 2 }]} />
+        <View style={[styles.cyberCorner, { bottom: 6, right: 6, borderBottomWidth: 1, borderRightWidth: 1, borderBottomRightRadius: 2 }]} />
+        {/* LED indicator */}
+        {isActive && <View style={[styles.cyberLed, { position: 'absolute', top: 8, right: 8 }]} />}
         {/* Icono Tipo Premium */}
         <View style={[styles.typeIcon, isPersonal ? styles.typeIconOrange : styles.typeIconAmber, !isTablet && styles.typeIconCompact]}>
           <Ionicons
@@ -170,8 +180,10 @@ export default function AsistenciaScreen() {
             </View>
             {salidaTime ? (
               <View style={styles.timeRow}>
-                <Ionicons name="log-out" size={14} color="#9ca3af" />
-                <Text style={[styles.timeText, !isTablet && styles.timeTextCompact, { color: '#9ca3af' }]}>{salidaTime}</Text>
+                <Ionicons name="log-out" size={14} color={item.auto_salida ? '#d97706' : '#9ca3af'} />
+                <Text style={[styles.timeText, !isTablet && styles.timeTextCompact, { color: item.auto_salida ? '#d97706' : '#9ca3af' }]}>
+                  {salidaTime}{item.auto_salida ? ' (Auto)' : ''}
+                </Text>
               </View>
             ) : (
               <View style={styles.activeBadge}>
@@ -205,6 +217,23 @@ export default function AsistenciaScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
+      {/* Cyber top accent line */}
+      <View style={styles.cyberTopAccent} />
+      {/* Sub-tabs */}
+      <View style={styles.subTabRow}>
+        <TouchableOpacity onPress={() => setViewMode('registros')}
+          style={[styles.subTab, viewMode === 'registros' && styles.subTabActive]}>
+          <Ionicons name="list" size={14} color={viewMode === 'registros' ? '#fff' : '#9ca3af'} />
+          <Text style={[styles.subTabText, viewMode === 'registros' && styles.subTabTextActive]}>Registros</Text>
+        </TouchableOpacity>
+        <TouchableOpacity onPress={() => setViewMode('reportes')}
+          style={[styles.subTab, viewMode === 'reportes' && styles.subTabActive]}>
+          <Ionicons name="document-text" size={14} color={viewMode === 'reportes' ? '#fff' : '#9ca3af'} />
+          <Text style={[styles.subTabText, viewMode === 'reportes' && styles.subTabTextActive]}>Reportes</Text>
+        </TouchableOpacity>
+      </View>
+
+      {viewMode === 'registros' ? (<>
       {/* Barra de Herramientas Premium */}
       <View style={[styles.toolbar, !isTablet && styles.toolbarCompact, isTablet && { alignItems: 'center' }]}>
         <View style={[styles.searchContainer, !isTablet && styles.searchContainerCompact, isTablet && { maxWidth: contentMaxWidth, width: '100%' }]}>
@@ -276,6 +305,10 @@ export default function AsistenciaScreen() {
             </View>
           }
         />
+      )}</>) : (
+        <View style={{ flex: 1, paddingTop: 8 }}>
+          <ReportesView />
+        </View>
       )}
 
       <CustomAlert
@@ -293,6 +326,59 @@ export default function AsistenciaScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#FFF7ED' },
+  subTabRow: {
+    flexDirection: 'row',
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    gap: 8,
+    backgroundColor: 'rgba(255,255,255,0.5)',
+    borderBottomWidth: 1,
+    borderBottomColor: 'rgba(255,255,255,0.4)',
+  },
+  subTab: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 10,
+    backgroundColor: 'rgba(255,255,255,0.5)',
+    borderWidth: 1,
+    borderColor: 'rgba(255,255,255,0.6)',
+  },
+  subTabActive: { backgroundColor: ORANGE, borderColor: ORANGE },
+  subTabText: { fontSize: 10, fontWeight: '900', color: '#9ca3af', letterSpacing: 1 },
+  subTabTextActive: { color: '#fff' },
+  cyberTopAccent: {
+    height: 2,
+    backgroundColor: ORANGE,
+    width: '30%',
+    borderRadius: 1,
+    marginLeft: 20,
+    marginBottom: 0,
+    opacity: 0.3,
+  },
+  cyberCornerContainer: {
+    position: 'relative',
+    overflow: 'visible',
+  },
+  cyberCorner: {
+    position: 'absolute',
+    width: 8,
+    height: 8,
+    borderColor: 'rgba(0,159,161,0.2)',
+  },
+  cyberLed: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: ORANGE,
+    shadowColor: ORANGE,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 2,
+  },
   toolbar: {
     backgroundColor: 'rgba(255,255,255,0.7)',
     paddingBottom: 16,

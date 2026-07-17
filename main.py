@@ -1,11 +1,20 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
+from sqlalchemy import text
 import database, models
 from routes import usuarios, asistencia, auth_routes, personal
 from websocket_manager import manager
 
 # Crear tablas en la DB
 models.Base.metadata.create_all(bind=database.engine)
+
+# Migración: agregar columna token_version si no existe
+try:
+    with database.engine.connect() as conn:
+        conn.execute(text("ALTER TABLE usuarios_sistema ADD COLUMN token_version INTEGER DEFAULT 0"))
+        conn.commit()
+except Exception:
+    pass  # Ya existe
 
 # Seed datos iniciales (cargos, departamentos, entes si están vacíos)
 def seed_referencias():
@@ -65,3 +74,7 @@ async def websocket_endpoint(websocket: WebSocket):
             await websocket.receive_text()
     except WebSocketDisconnect:
         manager.disconnect(websocket)
+
+if __name__ == "__main__":
+    import uvicorn
+    uvicorn.run("main:app", host="0.0.0.0", port=8000, reload=True)

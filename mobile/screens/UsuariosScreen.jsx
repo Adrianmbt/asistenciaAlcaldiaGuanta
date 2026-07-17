@@ -176,7 +176,14 @@ export default function UsuariosScreen() {
     const isActive = item.activo === 1;
 
     return (
-      <View style={[styles.row, !isActive && styles.rowInactive]}>
+      <View style={[styles.row, !isActive && styles.rowInactive, styles.cyberCornerContainer]}>
+        {/* Corner brackets */}
+        <View style={[styles.cyberCorner, { top: 6, left: 6, borderTopWidth: 1, borderLeftWidth: 1, borderTopLeftRadius: 2 }]} />
+        <View style={[styles.cyberCorner, { top: 6, right: 6, borderTopWidth: 1, borderRightWidth: 1, borderTopRightRadius: 2 }]} />
+        <View style={[styles.cyberCorner, { bottom: 6, left: 6, borderBottomWidth: 1, borderLeftWidth: 1, borderBottomLeftRadius: 2 }]} />
+        <View style={[styles.cyberCorner, { bottom: 6, right: 6, borderBottomWidth: 1, borderRightWidth: 1, borderBottomRightRadius: 2 }]} />
+        {/* LED indicator */}
+        {isActive && <View style={[styles.cyberLed, { position: 'absolute', top: 8, right: 8, backgroundColor: '#10b981' }]} />}
         <View style={[styles.avatar, isAdmin ? styles.avatarOrange : styles.avatarBlue]}>
           <Ionicons name={isAdmin ? "shield-checkmark" : "person"} size={24} color={isAdmin ? ORANGE : '#3b82f6'} />
         </View>
@@ -220,6 +227,7 @@ export default function UsuariosScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
+      <View style={styles.cyberTopAccent} />
       {/* Toolbar Premium */}
       <View style={[styles.toolbar, isTablet && { alignItems: 'center' }]}>
         <View style={[styles.searchWrapper, isTablet && { maxWidth: contentMaxWidth, width: '100%' }]}>
@@ -395,6 +403,36 @@ export default function UsuariosScreen() {
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#FFF7ED' },
+  cyberTopAccent: {
+    height: 2,
+    backgroundColor: ORANGE,
+    width: '30%',
+    borderRadius: 1,
+    marginLeft: 20,
+    marginBottom: 0,
+    opacity: 0.3,
+  },
+  cyberCornerContainer: {
+    position: 'relative',
+    overflow: 'visible',
+  },
+  cyberCorner: {
+    position: 'absolute',
+    width: 8,
+    height: 8,
+    borderColor: 'rgba(0,159,161,0.2)',
+  },
+  cyberLed: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: ORANGE,
+    shadowColor: ORANGE,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 2,
+  },
   toolbar: { 
     backgroundColor: 'rgba(255,255,255,0.7)', 
     padding: 20, 

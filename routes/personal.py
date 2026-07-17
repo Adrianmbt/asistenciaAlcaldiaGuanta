@@ -2,11 +2,11 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from database import get_db
 from datetime import datetime
-import models, schemas
+import auth, models, schemas
 from typing import List
 from websocket_manager import manager
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(auth.get_current_user)])
 
 # ─── CARGOS ──────────────────────────────────────────────────────────────────
 
@@ -118,7 +118,7 @@ def eliminar_ente(id: int, db: Session = Depends(get_db)):
 
 # ─── EMPLEADOS ───────────────────────────────────────────────────────────────
 
-@router.get("/", response_model=List[schemas.EmpleadoRead])
+@router.get("", response_model=List[schemas.EmpleadoRead])
 def listar_empleados(db: Session = Depends(get_db)):
     return db.query(models.Empleado).filter(models.Empleado.deleted_at.is_(None)).all()
 
@@ -129,7 +129,7 @@ def obtener_empleado(id: int, db: Session = Depends(get_db)):
         raise HTTPException(status_code=404, detail="Empleado no encontrado")
     return emp
 
-@router.post("/", response_model=schemas.EmpleadoRead)
+@router.post("", response_model=schemas.EmpleadoRead)
 async def crear_empleado(data: schemas.EmpleadoBase, db: Session = Depends(get_db)):
     existe = db.query(models.Empleado).filter(models.Empleado.cedula == data.cedula).first()
     if existe:

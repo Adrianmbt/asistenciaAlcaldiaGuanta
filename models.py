@@ -40,6 +40,7 @@ class UsuarioSistema(Base):
     password_hash = Column(String, nullable=False)
     rol = Column(Enum(RolUsuario), default=RolUsuario.PORTERO)
     activo = Column(Integer, default=1)
+    token_version = Column(Integer, default=0)
 
 # --- CARGOS ---
 class Cargo(Base):

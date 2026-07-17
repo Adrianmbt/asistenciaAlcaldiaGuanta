@@ -5,10 +5,10 @@ import models, schemas, auth
 from database import get_db
 from websocket_manager import manager
 
-router = APIRouter()
+router = APIRouter(dependencies=[Depends(auth.get_current_user)])
 
 # --- CREATE ---
-@router.post("/", response_model=schemas.UsuarioRead, status_code=status.HTTP_201_CREATED)
+@router.post("", response_model=schemas.UsuarioRead, status_code=status.HTTP_201_CREATED)
 async def crear_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(get_db)):
     # Verificar si el username ya existe
     db_user = db.query(models.UsuarioSistema).filter(models.UsuarioSistema.username == usuario.username).first()
@@ -34,7 +34,7 @@ async def crear_usuario(usuario: schemas.UsuarioCreate, db: Session = Depends(ge
     return nuevo_usuario
 
 # --- READ ALL ---
-@router.get("/", response_model=List[schemas.UsuarioRead])
+@router.get("", response_model=List[schemas.UsuarioRead])
 def listar_usuarios(db: Session = Depends(get_db)):
     return db.query(models.UsuarioSistema).all()
 

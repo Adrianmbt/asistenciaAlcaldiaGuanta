@@ -152,3 +152,93 @@ body {
   text-shadow: 0 0 8px rgba(0, 180, 184, 0.6);
 }
 
+/* Cuadrícula tecnológica muy sutil para modo claro */
+.bg-cyber-grid-light {
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 159, 161, 0.02) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 159, 161, 0.02) 1px, transparent 1px);
+}
+
+/* Esquinas de tecnología fina para contenedores */
+.cyber-corners {
+  position: relative;
+}
+
+.cyber-corner {
+  position: absolute;
+  width: 6px;
+  height: 6px;
+  border-color: rgba(0, 159, 161, 0.25);
+  pointer-events: none;
+}
+
+.cyber-corner-tl {
+  top: 6px;
+  left: 6px;
+  border-top-width: 1px;
+  border-left-width: 1px;
+  border-top-left-radius: 2px;
+}
+
+.cyber-corner-tr {
+  top: 6px;
+  right: 6px;
+  border-top-width: 1px;
+  border-right-width: 1px;
+  border-top-right-radius: 2px;
+}
+
+.cyber-corner-bl {
+  bottom: 6px;
+  left: 6px;
+  border-bottom-width: 1px;
+  border-left-width: 1px;
+  border-bottom-left-radius: 2px;
+}
+
+.cyber-corner-br {
+  bottom: 6px;
+  right: 6px;
+  border-bottom-width: 1px;
+  border-right-width: 1px;
+  border-bottom-right-radius: 2px;
+}
+
+/* Overlay de cuadrícula cibernética que no interfiere con gradientes */
+.bg-cyber-overlay {
+  position: relative;
+}
+
+.bg-cyber-overlay::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-size: 40px 40px;
+  background-image: 
+    linear-gradient(to right, rgba(0, 159, 161, 0.015) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(0, 159, 161, 0.015) 1px, transparent 1px);
+}
+
+/* Micro LED indicador de estado */
+.cyber-led {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background-color: #009FA1;
+  box-shadow: 0 0 6px rgba(0, 159, 161, 0.5);
+}
+
+.cyber-led-active {
+  animation: led-blink 1.5s infinite;
+}
+
+/* Línea divisoria cian delgada */
+.cyber-divider {
+  height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(0, 159, 161, 0.15), transparent);
+}
+
+

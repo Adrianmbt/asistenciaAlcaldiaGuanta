@@ -35,6 +35,40 @@ export default function VerificacionScreen() {
     motivo: '',
     telefono: '',
   });
+  const [errors, setErrors] = useState({});
+
+  const sanitize = {
+    cedula: (v) => v.replace(/\D/g, ''),
+    nombre: (v) => v.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ''),
+    telefono: (v) => v.replace(/\D/g, '').slice(0, 11),
+    ente: (v) => v.replace(/[^a-zA-ZáéíóúÁÉÍÓÚñÑ\s]/g, ''),
+    piso: (v) => v.replace(/\D/g, '').slice(0, 1),
+    motivo: (v) => v.slice(0, 200),
+  };
+
+  const validations = {
+    cedula: (v) => {
+      if (v.length < 6 || v.length > 9) return 'Entre 6 y 9 dígitos';
+      if (/^0{6,9}$/.test(v)) return 'Número de cédula inválido';
+      return '';
+    },
+    nombre: (v) => /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(v) ? '' : 'Solo letras y espacios',
+    telefono: (v) => {
+      if (v.length !== 11) return 'Debe tener 11 dígitos';
+      if (!/^04(12|22|14|24|16|26)\d{7}$/.test(v)) return 'Debe iniciar 0412/0422/0414/0424/0416/0426';
+      if (/(\d)\1{3,}/.test(v)) return 'Número inválido (repetitivo)';
+      return '';
+    },
+    ente: (v) => /^[a-zA-ZáéíóúÁÉÍÓÚñÑ\s]*$/.test(v) ? '' : 'Solo letras y espacios',
+    piso: (v) => /^\d$/.test(v) ? '' : 'Solo 1 dígito',
+    motivo: (v) => v.length <= 200 ? '' : 'Máximo 200 caracteres',
+  };
+
+  const validate = (field, value) => {
+    const msg = validations[field] ? validations[field](value) : '';
+    setErrors(prev => ({ ...prev, [field]: msg }));
+    return !msg;
+  };
 
   const [cameraPermission, requestCameraPermission] = useCameraPermissions();
   const searchTimeout = useRef(null);
@@ -44,15 +78,17 @@ export default function VerificacionScreen() {
   const hasActiveForm = !!(personData || isVisitor);
 
   const handleCedulaChange = (value) => {
-    setCedula(value);
+    const raw = sanitize.cedula(value);
+    setCedula(raw);
+    validate('cedula', raw);
     setPersonData(null);
     setIsVisitor(false);
     setMessage(null);
 
     if (searchTimeout.current) clearTimeout(searchTimeout.current);
 
-    if (value.length > 5) {
-      searchTimeout.current = setTimeout(() => buscarCedula(value), 500);
+    if (raw.length >= 6 && !validations.cedula(raw)) {
+      searchTimeout.current = setTimeout(() => buscarCedula(raw), 500);
     }
   };
 
@@ -79,8 +115,11 @@ export default function VerificacionScreen() {
     try {
       const params = { cedula };
       if (isVisitor) {
-        if (!visitorData.nombre.trim()) {
-          setMessage({ type: 'error', text: 'EL NOMBRE DEL VISITANTE ES REQUERIDO' });
+        const fields = ['nombre', 'ente', 'telefono', 'piso', 'motivo'];
+        let valid = true;
+        fields.forEach(f => { if (!validate(f, visitorData[f])) valid = false; });
+        if (!valid) {
+          setMessage({ type: 'error', text: 'CORRIGE LOS CAMPOS EN ROJO' });
           setLoading(false);
           return;
         }
@@ -135,6 +174,7 @@ export default function VerificacionScreen() {
 
   return (
     <SafeAreaView style={styles.safe} edges={['bottom']}>
+      <View style={styles.cyberTopAccent} />
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
         style={{ flex: 1 }}
@@ -210,7 +250,11 @@ export default function VerificacionScreen() {
             {/* Campo de cédula + QR */}
             <View style={[styles.searchSection, hasActiveForm && styles.searchSectionActive]}>
               <Text style={[styles.searchLabel, hasActiveForm && styles.searchLabelActive]}>IDENTIFICACIÓN DEL CIUDADANO</Text>
-              <View style={[styles.searchWrapper, hasActiveForm && styles.searchWrapperActive]}>
+              <View style={[
+                styles.searchWrapper,
+                hasActiveForm && styles.searchWrapperActive,
+                errors.cedula && { borderColor: '#f43f5e' },
+              ]}>
                 <Ionicons name="search" size={hasActiveForm ? 20 : 28} color={ORANGE} style={[styles.searchIcon, hasActiveForm && styles.searchIconActive]} />
                 <TextInput
                   style={[styles.searchInput, hasActiveForm && styles.searchInputActive]}
@@ -219,7 +263,7 @@ export default function VerificacionScreen() {
                   value={cedula}
                   onChangeText={handleCedulaChange}
                   keyboardType="numeric"
-                  maxLength={10}
+                  maxLength={9}
                 />
                 {loading && (
                   <ActivityIndicator color={ORANGE} style={{ marginRight: 8 }} />
@@ -232,11 +276,16 @@ export default function VerificacionScreen() {
                   <Ionicons name="qr-code" size={hasActiveForm ? 18 : 24} color="#fff" />
                 </TouchableOpacity>
               </View>
+              {errors.cedula ? <Text style={styles.fieldError}>{errors.cedula}</Text> : null}
             </View>
 
             {/* Ficha de Personal */}
             {personData && (
-              <View style={[styles.personalCard, !isTablet && styles.personalCardCompact]}>
+              <View style={[styles.personalCard, !isTablet && styles.personalCardCompact, styles.cyberCornerContainer]}>
+                <View style={[styles.cyberCorner, { top: 8, left: 8, borderTopWidth: 1, borderLeftWidth: 1, borderTopLeftRadius: 2 }]} />
+                <View style={[styles.cyberCorner, { top: 8, right: 8, borderTopWidth: 1, borderRightWidth: 1, borderTopRightRadius: 2 }]} />
+                <View style={[styles.cyberCorner, { bottom: 8, left: 8, borderBottomWidth: 1, borderLeftWidth: 1, borderBottomLeftRadius: 2 }]} />
+                <View style={[styles.cyberCorner, { bottom: 8, right: 8, borderBottomWidth: 1, borderRightWidth: 1, borderBottomRightRadius: 2 }]} />
                 <View style={[styles.personalCardHeader, !isTablet && styles.personalCardHeaderCompact]}>
                   <View style={[styles.avatarCircle, !isTablet && styles.avatarCircleCompact]}>
                     <Ionicons name="person" size={isTablet ? 48 : 36} color={ORANGE} />
@@ -275,7 +324,11 @@ export default function VerificacionScreen() {
 
             {/* Formulario Visitante */}
             {isVisitor && (
-              <View style={[styles.visitorCard, !isTablet && styles.visitorCardCompact]}>
+              <View style={[styles.visitorCard, !isTablet && styles.visitorCardCompact, styles.cyberCornerContainer]}>
+                <View style={[styles.cyberCorner, { top: 8, left: 8, borderTopWidth: 1, borderLeftWidth: 1, borderTopLeftRadius: 2 }]} />
+                <View style={[styles.cyberCorner, { top: 8, right: 8, borderTopWidth: 1, borderRightWidth: 1, borderTopRightRadius: 2 }]} />
+                <View style={[styles.cyberCorner, { bottom: 8, left: 8, borderBottomWidth: 1, borderLeftWidth: 1, borderBottomLeftRadius: 2 }]} />
+                <View style={[styles.cyberCorner, { bottom: 8, right: 8, borderBottomWidth: 1, borderRightWidth: 1, borderBottomRightRadius: 2 }]} />
                 <View style={[styles.visitorHeader, !isTablet && styles.visitorHeaderCompact]}>
                   <View style={[styles.visitorIconBox, !isTablet && styles.visitorIconBoxCompact]}>
                     <Ionicons name="person-add" size={isTablet ? 28 : 20} color="#fff" />
@@ -291,8 +344,9 @@ export default function VerificacionScreen() {
                     label="NOMBRE COMPLETO DEL VISITANTE"
                     placeholder="NOMBRE Y APELLIDO"
                     value={visitorData.nombre}
-                    onChangeText={(v) => setVisitorData({ ...visitorData, nombre: v })}
+                    onChangeText={(v) => { const nv = sanitize.nombre(v); setVisitorData(p => ({...p, nombre: nv})); validate('nombre', nv); }}
                     isTablet={isTablet}
+                    error={errors.nombre}
                   />
                   <View style={styles.row}>
                     <View style={{ flex: 1 }}>
@@ -300,42 +354,44 @@ export default function VerificacionScreen() {
                         label="WhatsApp / TELÉFONO"
                         placeholder="NÚMERO"
                         value={visitorData.telefono}
-                        onChangeText={(v) => setVisitorData({ ...visitorData, telefono: v })}
+                        onChangeText={(v) => { const nv = sanitize.telefono(v); setVisitorData(p => ({...p, telefono: nv})); validate('telefono', nv); }}
                         keyboardType="phone-pad"
                         isTablet={isTablet}
+                        error={errors.telefono}
                       />
                     </View>
                     <View style={{ width: 12 }} />
                     <View style={{ flex: 1 }}>
                       <VisitorField
-                        label="ENTE / PROCEDENCIA"
-                        placeholder="ENTIDAD"
-                        value={visitorData.ente}
-                        onChangeText={(v) => setVisitorData({ ...visitorData, ente: v })}
+                        label="PISO"
+                        placeholder="PISO"
+                        value={visitorData.piso}
+                        onChangeText={(v) => { const nv = sanitize.piso(v); setVisitorData(p => ({...p, piso: nv})); validate('piso', nv); }}
+                        keyboardType="phone-pad"
                         isTablet={isTablet}
+                        error={errors.piso}
                       />
                     </View>
                   </View>
-                  <View style={styles.row}>
-                    <View style={{ flex: 1 }}>
-                      <VisitorField
-                        label="PISO / OFICINA"
-                        placeholder="DESTINO"
-                        value={visitorData.piso}
-                        onChangeText={(v) => setVisitorData({ ...visitorData, piso: v })}
-                        isTablet={isTablet}
-                      />
-                    </View>
-                    <View style={{ width: 12 }} />
-                    <View style={{ flex: 1 }}>
-                      <VisitorField
-                        label="MOTIVO"
-                        placeholder="MOTIVO"
-                        value={visitorData.motivo}
-                        onChangeText={(v) => setVisitorData({ ...visitorData, motivo: v })}
-                        isTablet={isTablet}
-                      />
-                    </View>
+                  <VisitorField
+                    label="ENTE / PROCEDENCIA"
+                    placeholder="ENTIDAD"
+                    value={visitorData.ente}
+                    onChangeText={(v) => { const nv = sanitize.ente(v); setVisitorData(p => ({...p, ente: nv})); validate('ente', nv); }}
+                    isTablet={isTablet}
+                    error={errors.ente}
+                  />
+                  <View>
+                    <VisitorField
+                      label="MOTIVO DEL INGRESO"
+                      placeholder="MOTIVO"
+                      value={visitorData.motivo}
+                      onChangeText={(v) => { const nv = sanitize.motivo(v); setVisitorData(p => ({...p, motivo: nv})); validate('motivo', nv); }}
+                      isTablet={isTablet}
+                      multiline
+                      error={errors.motivo}
+                    />
+                    <Text style={styles.charCounter}>{visitorData.motivo.length}/200</Text>
                   </View>
                 </View>
 
@@ -374,18 +430,26 @@ export default function VerificacionScreen() {
   );
 }
 
-function VisitorField({ label, placeholder, value, onChangeText, keyboardType, isTablet }) {
+function VisitorField({ label, placeholder, value, onChangeText, keyboardType, isTablet, error, multiline }) {
   return (
     <View style={vfStyles.group}>
       <Text style={[vfStyles.label, !isTablet && vfStyles.labelCompact]}>{label}</Text>
       <TextInput
-        style={[vfStyles.input, !isTablet && vfStyles.inputCompact]}
+        style={[
+          vfStyles.input,
+          !isTablet && vfStyles.inputCompact,
+          multiline && vfStyles.inputMultiline,
+          error && vfStyles.inputError,
+        ]}
         placeholder={placeholder}
         placeholderTextColor="#d1d5db"
         value={value}
         onChangeText={onChangeText}
         keyboardType={keyboardType || 'default'}
+        multiline={multiline}
+        textAlignVertical={multiline ? 'top' : 'center'}
       />
+      {error ? <Text style={vfStyles.error}>{error}</Text> : null}
     </View>
   );
 }
@@ -423,10 +487,73 @@ const vfStyles = StyleSheet.create({
     fontSize: 12,
     borderWidth: 1.5,
   },
+  inputMultiline: {
+    minHeight: 80,
+    paddingTop: 12,
+  },
+  inputError: {
+    borderColor: '#f43f5e',
+  },
+  error: {
+    fontSize: 9,
+    fontWeight: '900',
+    color: '#f43f5e',
+    marginTop: 4,
+    marginLeft: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
 });
 
 const styles = StyleSheet.create({
   safe: { flex: 1, backgroundColor: '#FFF7ED' },
+  fieldError: {
+    fontSize: 9,
+    fontWeight: '900',
+    color: '#f43f5e',
+    marginTop: 6,
+    marginLeft: 4,
+    textTransform: 'uppercase',
+    letterSpacing: 0.5,
+  },
+  charCounter: {
+    fontSize: 9,
+    fontWeight: '700',
+    color: '#9ca3af',
+    textAlign: 'right',
+    marginTop: 2,
+    marginRight: 4,
+  },
+  cyberTopAccent: {
+    height: 2,
+    backgroundColor: ORANGE,
+    width: '30%',
+    borderRadius: 1,
+    marginLeft: 20,
+    marginBottom: 0,
+    opacity: 0.3,
+  },
+  cyberCornerContainer: {
+    position: 'relative',
+    overflow: 'visible',
+  },
+  cyberCorner: {
+    position: 'absolute',
+    width: 8,
+    height: 8,
+    borderColor: 'rgba(0,159,161,0.2)',
+  },
+  cyberLed: {
+    width: 6,
+    height: 6,
+    borderRadius: 3,
+    backgroundColor: ORANGE,
+    shadowColor: ORANGE,
+    shadowOffset: { width: 0, height: 0 },
+    shadowOpacity: 0.6,
+    shadowRadius: 4,
+    elevation: 2,
+  },
   scroll: { flexGrow: 1 },
   premiumHeader: {
     backgroundColor: ORANGE,
